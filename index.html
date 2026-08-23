@@ -243,11 +243,11 @@
 
 <div class="app-container">
 
-  <!-- ADIM 0: API KEY KAYDI -->
+  <!-- ADIM 0: GÜVENLİ API KEY KAYDI -->
   <div id="step0" class="step-screen active">
     <div class="progress-bar"><div class="progress-fill" style="width: 20%"></div></div>
     <h1>API Key <span>Girişi</span></h1>
-    <p class="sub-title">YAZIYOR AI'ı kullanabilmek için Google Gemini API Key'ini gir. Bu işlem yalnızca bir kez yapılır.</p>
+    <p class="sub-title">YAZIYOR AI'ı kullanabilmek için Google Gemini API Key'ini gir. Bu işlem yalnızca bir kez yapılır ve cihazında saklanır.</p>
     <input type="password" id="apiKeyInput" class="input-box" placeholder="AIzaSy...">
     <button class="primary-btn" onclick="saveApiKey()">Başla</button>
   </div>
@@ -358,7 +358,7 @@
 
 </div>
 
-<!-- PROFİL / AYARLAR DÜZENLEME PENCERESİ (MODAL) -->
+<!-- PROFİL DÜZENLEME MODAL PENCERESİ -->
 <div id="profileModal" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
@@ -400,7 +400,7 @@
     </div>
 
     <button class="primary-btn" style="margin-top: 15px;" onclick="saveProfileChanges()">Değişiklikleri Kaydet</button>
-    <p style="text-align: center; color: red; font-size: 11px; margin-top: 15px; cursor: pointer;" onclick="resetApiKey()">🔑 Sıfırla (API Key ve Profil)</p>
+    <p style="text-align: center; color: red; font-size: 11px; margin-top: 15px; cursor: pointer;" onclick="resetApiKey()">🔑 Uygulamayı Sıfırla (API Key ve Profil)</p>
   </div>
 </div>
 
@@ -470,7 +470,7 @@
     }
   }
 
-  /* MODAL İŞLEMLERİ */
+  /* MODAL (PROFİL) İŞLEMLERİ */
   function openProfileModal() {
     document.getElementById('editName').value = userData.name;
     document.getElementById('editAge').value = userData.age;
@@ -492,7 +492,7 @@
     localStorage.setItem('yaziyor_user_v2', JSON.stringify(userData));
     document.getElementById('profileBtnName').innerText = userData.name;
     closeProfileModal();
-    alert("Profil bilgilerin güncellendi!");
+    alert("Profil bilgilerin başarıyla güncellendi!");
   }
 
   function resetApiKey() {
@@ -567,6 +567,7 @@
         }]
       });
 
+      // Google Gemini Güncel Modellere İstek
       let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -575,7 +576,8 @@
 
       let data = await response.json();
 
-      if (data.error && (data.error.code === 429 || data.error.message.includes("high demand"))) {
+      // İkinci Öncelikli Yedek Model Denemesi
+      if (data.error) {
         response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
