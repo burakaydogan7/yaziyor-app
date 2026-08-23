@@ -62,7 +62,7 @@
       border-radius: 14px;
       padding: 16px;
       color: #fff;
-      font-size: 16px;
+      font-size: 15px;
       width: 100%;
       box-sizing: border-box;
       margin-bottom: 20px;
@@ -179,9 +179,18 @@
 
 <div class="app-container">
 
+  <!-- ADIM 0: GÜVENLİ API KEY KAYDI -->
+  <div id="step0" class="step-screen active">
+    <div class="progress-bar"><div class="progress-fill" style="width: 20%"></div></div>
+    <h1>API Key <span>Girişi</span></h1>
+    <p class="sub-title">YAZIYOR AI'ı kullanabilmek için Google Gemini API Key'ini gir. Bu işlem yalnızca bir kez yapılır ve cihazında güvenle saklanır.</p>
+    <input type="password" id="apiKeyInput" class="input-box" placeholder="AIzaSy...">
+    <button class="primary-btn" onclick="saveApiKey()">Başla</button>
+  </div>
+
   <!-- ADIM 1: KULLANICI İSMİ -->
-  <div id="step1" class="step-screen active">
-    <div class="progress-bar"><div class="progress-fill" style="width: 25%"></div></div>
+  <div id="step1" class="step-screen">
+    <div class="progress-bar"><div class="progress-fill" style="width: 40%"></div></div>
     <h1>Seni <span>Tanıyalım</span></h1>
     <p class="sub-title">YAZIYOR AI sana özel en doğru önerileri hazırlasın.</p>
     <input type="text" id="userName" class="input-box" placeholder="İsmini Yaz...">
@@ -190,7 +199,7 @@
 
   <!-- ADIM 2: YAŞ SEÇİMİ -->
   <div id="step2" class="step-screen">
-    <div class="progress-bar"><div class="progress-fill" style="width: 50%"></div></div>
+    <div class="progress-bar"><div class="progress-fill" style="width: 60%"></div></div>
     <h1>Yaş <span>Aralığın</span> Nedir?</h1>
     <p class="sub-title">Sana uygun tonda iletişim tavsiyeleri verelim.</p>
     <div class="grid-2">
@@ -212,7 +221,7 @@
 
   <!-- ADIM 3: MESAJLAŞMA UZUNLUĞU -->
   <div id="step3" class="step-screen">
-    <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
+    <div class="progress-bar"><div class="progress-fill" style="width: 80%"></div></div>
     <h1>Mesajlaşma <span>stilin</span> nedir?</h1>
     <p class="sub-title">Sana en uygun mesaj tarzını seç, YAZIYOR buna göre öneri yapsın.</p>
     <div class="grid-1">
@@ -279,7 +288,7 @@
 
     <div id="results"></div>
 
-    <div class="key-reset" onclick="resetApiKey()">🔑 API Key'i Değiştir</div>
+    <div class="key-reset" onclick="resetApiKey()">🔑 API Key veya Profili Sıfırla</div>
   </div>
 
 </div>
@@ -289,12 +298,28 @@
   let currentMode = 'chat';
 
   window.onload = function() {
-    const saved = localStorage.getItem('yaziyor_user_v2');
-    if(saved) {
-      userData = JSON.parse(saved);
+    const savedKey = localStorage.getItem('yaziyor_gemini_key');
+    const savedUser = localStorage.getItem('yaziyor_user_v2');
+
+    // API Key ve Profil kayıtlıysa doğrudan Ana Ekran'a geç
+    if (savedKey && savedUser) {
+      userData = JSON.parse(savedUser);
       showDashboard();
+    } else if (savedKey) {
+      // Key kayıtlı ama profil kurulmadıysa Adım 1'den başlat
+      nextStep(1);
     }
   };
+
+  function saveApiKey() {
+    const key = document.getElementById('apiKeyInput').value.trim();
+    if (!key) {
+      alert("Lütfen geçerli bir API Key gir!");
+      return;
+    }
+    localStorage.setItem('yaziyor_gemini_key', key);
+    nextStep(1);
+  }
 
   function selectOption(el, key, val) {
     el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
@@ -360,21 +385,17 @@
 
   function resetApiKey() {
     localStorage.removeItem('yaziyor_gemini_key');
-    alert("API Key hafızadan silindi. Sonraki analizde yeni anahtar sorulacak.");
+    localStorage.removeItem('yaziyor_user_v2');
+    alert("Tüm veriler sıfırlandı. Yeniden kurulum ekranına yönlendiriliyorsunuz.");
+    location.reload();
   }
 
   async function analyzeImage() {
-    // 1. API Key Kontrolü (Açılır Pencere Mantığı)
-    let apiKey = localStorage.getItem('yaziyor_gemini_key');
-    
+    const apiKey = localStorage.getItem('yaziyor_gemini_key');
     if (!apiKey) {
-      apiKey = prompt("Lütfen Google Gemini API Key'inizi girin:");
-      if (apiKey) {
-        localStorage.setItem('yaziyor_gemini_key', apiKey.trim());
-      } else {
-        alert("API Key girmeden analiz yapamazsınız!");
-        return;
-      }
+      alert("API Key bulunamadı. Lütfen uygulamayı sıfırlayıp tekrar girin.");
+      resetApiKey();
+      return;
     }
 
     const fileInput = document.getElementById('fileInput');
