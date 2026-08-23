@@ -63,12 +63,12 @@
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 16px;
+      padding: 14px 16px;
       color: #fff;
-      font-size: 15px;
+      font-size: 14px;
       width: 100%;
       box-sizing: border-box;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       outline: none;
     }
 
@@ -144,11 +144,7 @@
       align-items: center;
       margin-bottom: 20px;
     }
-    .header-bar h2 { 
-      font-size: 22px; 
-      margin: 0; 
-      user-select: none; 
-    }
+    .header-bar h2 { font-size: 22px; margin: 0; user-select: none; }
     .header-bar h2 span { color: var(--primary); }
     
     .profile-btn {
@@ -225,13 +221,7 @@
       margin-bottom: 20px;
     }
     .modal-header h3 { margin: 0; font-size: 18px; }
-    .close-btn {
-      background: none;
-      border: none;
-      color: var(--text-sub);
-      font-size: 20px;
-      cursor: pointer;
-    }
+    .close-btn { background: none; border: none; color: var(--text-sub); font-size: 20px; cursor: pointer; }
 
     .setting-group { margin-bottom: 16px; }
     .setting-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
@@ -252,13 +242,25 @@
 
 <div class="app-container">
 
-  <!-- ADIM 0 -->
+  <!-- ADIM 0: API ANAHTARLARI -->
   <div id="step0" class="step-screen active">
-    <div class="progress-bar"><div class="progress-fill" style="width: 20%"></div></div>
-    <h1>API Key <span>Girişi</span></h1>
-    <p class="sub-title">YAZIYOR AI'ı kullanabilmek için Google Gemini API Key'ini gir.</p>
-    <input type="password" id="apiKeyInput" class="input-box" placeholder="AIzaSy...">
-    <button class="primary-btn" onclick="saveApiKey()">Başla</button>
+    <div class="progress-bar"><div class="progress-fill" style="width: 15%"></div></div>
+    <h1>Yapay Zeka <span>Anahtarları</span></h1>
+    <p class="sub-title">En azından Gemini API Key girmen yeterlidir. İsteğe bağlı olarak diğerlerini de yedek olarak ekleyebilirsin.</p>
+    
+    <label style="font-size:11px; color:var(--primary); display:block; margin-bottom:4px;">Google Gemini API Key (Zorunlu)</label>
+    <input type="password" id="geminiKeyInput" class="input-box" placeholder="AIzaSy...">
+    
+    <label style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:4px;">OpenAI / ChatGPT API Key (İsteğe Bağlı Yedek)</label>
+    <input type="password" id="openaiKeyInput" class="input-box" placeholder="sk-proj-...">
+
+    <label style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:4px;">Anthropic / Claude API Key (İsteğe Bağlı Yedek)</label>
+    <input type="password" id="anthropicKeyInput" class="input-box" placeholder="sk-ant-...">
+
+    <label style="font-size:11px; color:var(--text-sub); display:block; margin-bottom:4px;">xAI / Grok API Key (İsteğe Bağlı Yedek)</label>
+    <input type="password" id="grokKeyInput" class="input-box" placeholder="xai-...">
+
+    <button class="primary-btn" onclick="saveApiKeys()">Devam Et</button>
   </div>
 
   <!-- ADIM 1 -->
@@ -371,19 +373,15 @@
 
 </div>
 
-<!-- PROFİL MODAL -->
+<!-- PROFİL & API MODAL -->
 <div id="profileModal" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
-      <h3>Profil & Tercihler</h3>
+      <h3>Profil & API Anahtarları</h3>
       <button class="close-btn" onclick="closeProfileModal()">✕</button>
     </div>
 
-    <div class="setting-group">
-      <label>İsmin</label>
-      <input type="text" id="editName">
-    </div>
-
+    <div class="setting-group"><label>İsmin</label><input type="text" id="editName"></div>
     <div class="setting-group">
       <label>Yaş Aralığı</label>
       <select id="editAge">
@@ -393,7 +391,6 @@
         <option value="33+">33+ (Karizmatik)</option>
       </select>
     </div>
-
     <div class="setting-group">
       <label>Mesajlaşma Stili (Uzunluk)</label>
       <select id="editLength">
@@ -402,7 +399,6 @@
         <option value="Uzun ve Detaylı">📄 Uzun ve Detaylı</option>
       </select>
     </div>
-
     <div class="setting-group">
       <label>Sohbet Tonu</label>
       <select id="editTone">
@@ -412,8 +408,15 @@
       </select>
     </div>
 
+    <hr style="border:0; border-top:1px solid var(--border); margin: 20px 0;">
+
+    <div class="setting-group"><label>Gemini API Key</label><input type="password" id="editGeminiKey"></div>
+    <div class="setting-group"><label>OpenAI API Key</label><input type="password" id="editOpenaiKey"></div>
+    <div class="setting-group"><label>Anthropic API Key</label><input type="password" id="editAnthropicKey"></div>
+    <div class="setting-group"><label>Grok (xAI) API Key</label><input type="password" id="editGrokKey"></div>
+
     <button class="primary-btn" style="margin-top: 15px;" onclick="saveProfileChanges()">Değişiklikleri Kaydet</button>
-    <p style="text-align: center; color: red; font-size: 11px; margin-top: 15px; cursor: pointer;" onclick="resetApiKey()">🔑 Uygulamayı Sıfırla (API Key ve Profil)</p>
+    <p style="text-align: center; color: red; font-size: 11px; margin-top: 15px; cursor: pointer;" onclick="resetAll()">🔑 Her Şeyi Sıfırla</p>
   </div>
 </div>
 
@@ -423,21 +426,26 @@
   let selectedImageUrl = null;
 
   window.onload = function() {
-    const savedKey = localStorage.getItem('yaziyor_gemini_key_v7');
-    const savedUser = localStorage.getItem('yaziyor_user_v7');
+    const geminiKey = localStorage.getItem('yaziyor_gemini_key_v8');
+    const savedUser = localStorage.getItem('yaziyor_user_v8');
 
-    if (savedKey && savedUser) {
+    if (geminiKey && savedUser) {
       userData = JSON.parse(savedUser);
       showDashboard();
-    } else if (savedKey) {
+    } else if (geminiKey) {
       nextStep(1);
     }
   };
 
-  function saveApiKey() {
-    const key = document.getElementById('apiKeyInput').value.trim();
-    if (!key) { alert("Lütfen geçerli bir API Key gir!"); return; }
-    localStorage.setItem('yaziyor_gemini_key_v7', key);
+  function saveApiKeys() {
+    const gKey = document.getElementById('geminiKeyInput').value.trim();
+    if (!gKey) { alert("En azından Gemini API Key girmelisin!"); return; }
+    
+    localStorage.setItem('yaziyor_gemini_key_v8', gKey);
+    localStorage.setItem('yaziyor_openai_key_v8', document.getElementById('openaiKeyInput').value.trim());
+    localStorage.setItem('yaziyor_anthropic_key_v8', document.getElementById('anthropicKeyInput').value.trim());
+    localStorage.setItem('yaziyor_grok_key_v8', document.getElementById('grokKeyInput').value.trim());
+    
     nextStep(1);
   }
 
@@ -458,7 +466,7 @@
   }
 
   function finishOnboarding() {
-    localStorage.setItem('yaziyor_user_v7', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v8', JSON.stringify(userData));
     showDashboard();
   }
 
@@ -472,13 +480,7 @@
     currentMode = mode;
     document.getElementById('chatTab').classList.toggle('active', mode === 'chat');
     document.getElementById('storyTab').classList.toggle('active', mode === 'story');
-    
-    const label = document.getElementById('inputLabel');
-    if(mode === 'chat') {
-      label.innerText = "Sohbetin Ekran Görüntüsünü Yükleyin:";
-    } else {
-      label.innerText = "Story'nin Ekran Görüntüsünü Yükleyin:";
-    }
+    document.getElementById('inputLabel').innerText = (mode === 'chat') ? "Sohbetin Ekran Görüntüsünü Yükleyin:" : "Story'nin Ekran Görüntüsünü Yükleyin:";
   }
 
   function previewImage(input) {
@@ -500,6 +502,10 @@
     document.getElementById('editAge').value = userData.age;
     document.getElementById('editLength').value = userData.length;
     document.getElementById('editTone').value = userData.tone;
+    document.getElementById('editGeminiKey').value = localStorage.getItem('yaziyor_gemini_key_v8') || '';
+    document.getElementById('editOpenaiKey').value = localStorage.getItem('yaziyor_openai_key_v8') || '';
+    document.getElementById('editAnthropicKey').value = localStorage.getItem('yaziyor_anthropic_key_v8') || '';
+    document.getElementById('editGrokKey').value = localStorage.getItem('yaziyor_grok_key_v8') || '';
     document.getElementById('profileModal').classList.add('active');
   }
 
@@ -510,19 +516,30 @@
     userData.age = document.getElementById('editAge').value;
     userData.length = document.getElementById('editLength').value;
     userData.tone = document.getElementById('editTone').value;
-    localStorage.setItem('yaziyor_user_v7', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v8', JSON.stringify(userData));
+
+    localStorage.setItem('yaziyor_gemini_key_v8', document.getElementById('editGeminiKey').value.trim());
+    localStorage.setItem('yaziyor_openai_key_v8', document.getElementById('editOpenaiKey').value.trim());
+    localStorage.setItem('yaziyor_anthropic_key_v8', document.getElementById('editAnthropicKey').value.trim());
+    localStorage.setItem('yaziyor_grok_key_v8', document.getElementById('editGrokKey').value.trim());
+
     document.getElementById('profileBtnName').innerText = userData.name;
     closeProfileModal();
-    alert("Profil bilgilerin başarıyla güncellendi!");
+    alert("Profil ve API anahtarları güncellendi!");
   }
 
-  function resetApiKey() { localStorage.clear(); location.reload(); }
+  function resetAll() { localStorage.clear(); location.reload(); }
 
+  // ÇOKLU YAPAY ZEKA SAĞLAYICISI FALLBACK MEKANİZMASI
   async function analyzeScreenshot() {
-    const apiKey = localStorage.getItem('yaziyor_gemini_key_v7');
-    if (!apiKey) {
-      alert("API Key bulunamadı.");
-      resetApiKey();
+    const gKey = localStorage.getItem('yaziyor_gemini_key_v8');
+    const oKey = localStorage.getItem('yaziyor_openai_key_v8');
+    const aKey = localStorage.getItem('yaziyor_anthropic_key_v8');
+    const xKey = localStorage.getItem('yaziyor_grok_key_v8');
+
+    if (!gKey && !oKey && !aKey && !xKey) {
+      alert("Hiçbir API Key bulunamadı!");
+      resetAll();
       return;
     }
 
@@ -535,19 +552,14 @@
     resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Fotoğraf taranıyor (OCR)...</p>";
 
     try {
-      const { data: { text } } = await Tesseract.recognize(
-        selectedImageUrl,
-        'tur+eng',
-        { logger: m => {} }
-      );
+      const { data: { text } } = await Tesseract.recognize(selectedImageUrl, 'tur+eng', { logger: m => {} });
 
       if (!text || text.trim().length < 2) {
         throw new Error("Görselde yeterli yazı okunamadı. Lütfen daha net bir ekran görüntüsü yükle.");
       }
 
-      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ Gerçekçi sokak diliyle hazırlanıyor...</p>";
+      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ Doğal sokak diliyle üretiliyor (Yapay zekalar taranıyor)...</p>";
 
-      // Tinder, Badoo, Happn gibi platformlara özel güncel ve doğal dil direktifi
       const systemContext = `Sen Tinder, Badoo, Happn ve Instagram gibi platformlarda flört eden, 20'li yaşlarında çok popüler, dili son derece doğal, sokak ve sosyal medya ağzıyla konuşan bir diyalog koçusun. Asla robotik, resmi veya yapay zeka gibi uzun cümleler kurma. Tamamen gerçek bir insan gibi konuş. 
 Kullanıcının Uzunluk Tercihi: "${userData.length}" -> Eğer 'Kısa ve Öz' seçildiyse mutlaka tek cümlelik, net, vurucu ve karşı tarafa pas atan kısa cevaplar ver. Uzatmak yasak.
 Kullanıcının Ton Tercihi: "${userData.tone}"`;
@@ -565,54 +577,98 @@ ${currentMode === 'chat'
   ? "Sohbetin akışına ve karşı tarafın havasına bakarak kullanıcının tercihlerine uyan 3 alternatif doğal cevap yaz." 
   : "Story içeriğine bakarak kullanıcının tercihlerine uyan 3 etkileyici DM açılış mesajı yaz."}
 
-Kurallar: Kesinlikle robotik olmasın, gerçek sosyal medya yazışma dilinde (küçük harf uyumu, doğal slang veya akışkan tarzda) 3 alternatif sun. Markdown kullan.`;
+Kurallar: Kesinlikle robotik olmasın, gerçek sosyal medya yazışma dilinde 3 alternatif sun. Markdown kullan.`;
 
-      const requestBody = JSON.stringify({
-        contents: [{
-          parts: [{ text: promptText }]
-        }]
-      });
+      let aiResponseText = null;
 
-      const modelsToTry = [
-        "gemini-1.5-flash",
-        "gemini-1.5-pro",
-        "gemini-3.5-flash"
-      ];
-
-      let response = null;
-      let lastError = null;
-
-      for (let modelName of modelsToTry) {
-        try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-          const res = await fetch(endpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: requestBody
-          });
-
-          if (res.ok) {
-            const data = await res.json();
-            if (!data.error && data.candidates && data.candidates.length > 0) {
-              response = data;
-              break; 
-            } else if (data.error) {
-              lastError = data.error.message;
+      // 1. ADIM: GEMINI MODELLERİNİ DENE
+      if (gKey && !aiResponseText) {
+        const geminiModels = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-3.5-flash"];
+        for (let model of geminiModels) {
+          try {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${gKey}`;
+            const res = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data.candidates && data.candidates[0]?.content) {
+                aiResponseText = data.candidates[0].content.parts[0].text;
+                break;
+              }
             }
-          } else {
-            const errData = await res.json().catch(() => ({}));
-            lastError = errData.error?.message || `HTTP ${res.status} - Model (${modelName}) erişilemedi.`;
-          }
-        } catch (e) {
-          lastError = e.message;
+          } catch(e) {}
         }
       }
 
-      if (!response) {
-        throw new Error(lastError || "Tüm yapay zeka modelleri yoğun veya anahtarınız kısıtlı.");
+      // 2. ADIM: OPENAI (CHATGPT) DENE
+      if (oKey && !aiResponseText) {
+        try {
+          const res = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${oKey}` },
+            body: JSON.stringify({
+              model: "gpt-4o-mini",
+              messages: [{ role: "system", content: systemContext }, { role: "user", content: promptText }]
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            aiResponseText = data.choices[0].message.content;
+          }
+        } catch(e) {}
       }
 
-      const htmlContent = marked.parse(response.candidates[0].content.parts[0].text);
+      // 3. ADIM: ANTHROPIC (CLAUDE) DENE
+      if (aKey && !aiResponseText) {
+        try {
+          const res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json', 
+              'x-api-key': aKey,
+              'anthropic-version': '2023-06-01',
+              'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body: JSON.stringify({
+              model: "claude-3-5-haiku-20241022",
+              max_tokens: 1000,
+              system: systemContext,
+              messages: [{ role: "user", content: promptText }]
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            aiResponseText = data.content[0].text;
+          }
+        } catch(e) {}
+      }
+
+      // 4. ADIM: GROK (XAI) DENE
+      if (xKey && !aiResponseText) {
+        try {
+          const res = await fetch("https://api.x.ai/v1/chat/completions", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${xKey}` },
+            body: JSON.stringify({
+              model: "grok-4.6",
+              messages: [{ role: "system", content: systemContext }, { role: "user", content: promptText }]
+            })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            aiResponseText = data.choices[0].message.content;
+          }
+        } catch(e) {}
+      }
+
+      if (!aiResponseText) {
+        throw new Error("Tüm ekli yapay zeka sağlayıcıları kotaya takıldı veya anahtarlar geçersiz. Lütfen birkaç saniye bekleyip tekrar deneyin.");
+      }
+
+      const htmlContent = marked.parse(aiResponseText);
       resultsDiv.innerHTML = `<div class="result-area">${htmlContent}</div>`;
 
     } catch (err) {
