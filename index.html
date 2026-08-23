@@ -268,7 +268,7 @@
   <div id="step0" class="step-screen active">
     <div class="progress-bar"><div class="progress-fill" style="width: 20%"></div></div>
     <h1>API Key <span>Girişi</span></h1>
-    <p class="sub-title">YAZIYOR AI'ı kullanabilmek için Google Gemini API Key'ini gir.</p>
+    <p class="sub-title">YAZIYOR AI'ı Key gir.</p>
     <input type="password" id="apiKeyInput" class="input-box" placeholder="AIzaSy...">
     <button class="primary-btn" onclick="saveApiKey()">Başla</button>
   </div>
@@ -687,7 +687,7 @@
       }
 
       if (!response) {
-        throw new Error(lastError || "Tüm yapay zeka modelleri yoğun veya anahtarınız bu modellere kısıtlı.");
+        throw new Error(lastError || "Yapay zeka motoru yoğun. Lütfen tekrar dene.");
       }
 
       appStats.totalAnalyses++;
