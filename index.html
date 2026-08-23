@@ -17,7 +17,6 @@
       --text-sub: #8E8E9F;
       --border: #232338;
       --admin-color: #3b82f6;
-      --danger-color: #ef4444;
     }
 
     body {
@@ -220,7 +219,7 @@
       border-radius: 24px;
       padding: 24px;
       width: 100%;
-      max-width: 400px;
+      max-width: 380px;
       max-height: 90vh;
       overflow-y: auto;
       box-sizing: border-box;
@@ -243,7 +242,7 @@
 
     .setting-group { margin-bottom: 16px; }
     .setting-group label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
-    .setting-group select, .setting-group input, .setting-group textarea {
+    .setting-group select, .setting-group input {
       width: 100%;
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -253,61 +252,17 @@
       font-size: 14px;
       outline: none;
       box-sizing: border-box;
-      font-family: inherit;
     }
 
     .stat-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
     .stat-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
-    .stat-box h3 { margin: 0 0 5px 0; font-size: 18px; color: var(--admin-color); }
+    .stat-box h3 { margin: 0 0 5px 0; font-size: 20px; color: var(--admin-color); }
     .stat-box p { margin: 0; font-size: 11px; color: var(--text-sub); }
-
-    .quick-preset-btns { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
-    .preset-chip {
-      background: var(--card-bg);
-      border: 1px solid var(--admin-color);
-      color: var(--admin-color);
-      padding: 5px 10px;
-      border-radius: 12px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .preset-chip:hover { background: rgba(59, 130, 246, 0.15); }
-
-    .user-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 12px;
-    }
-    .user-table th, .user-table td {
-      border: 1px solid var(--border);
-      padding: 8px;
-      text-align: left;
-    }
-    .user-table th { background: var(--card-bg); color: var(--text-sub); }
-    .ban-btn {
-      background: var(--danger-color);
-      color: white;
-      border: none;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 10px;
-      font-weight: bold;
-    }
-    .ban-btn.banned { background: #10b981; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
-
-  <!-- BANLI EKRANI -->
-  <div id="bannedScreen" class="step-screen" style="text-align: center; justify-content: center; align-items: center; height: 80vh;">
-    <h1 style="color: var(--danger-color);">⛔ Erişim Engellendi</h1>
-    <p class="sub-title">Yönetici tarafından bu cihaza / kullanıcıya ait erişim engellenmiştir.</p>
-  </div>
 
   <!-- ADIM 0 -->
   <div id="step0" class="step-screen active">
@@ -413,6 +368,7 @@
     <div style="margin-bottom: 15px;">
       <label id="inputLabel" style="display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 6px;">Sohbetin Ekran Görüntüsünü Yükleyin:</label>
       
+      <!-- Görsel Seçim Alanı -->
       <div class="upload-box" onclick="document.getElementById('imageFile').click()">
         <span id="uploadText" style="font-size: 13px; color: var(--text-sub);">📷 Fotoğraf seçmek için tıkla veya sürükle</span>
         <input type="file" id="imageFile" accept="image/*" style="display:none" onchange="previewImage(this)">
@@ -477,7 +433,7 @@
 <div id="adminModal" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 style="color: var(--admin-color);">🛠️ Yönetici Kontrol Paneli</h3>
+      <h3 style="color: var(--admin-color);">🛠️ Gizli Admin Paneli</h3>
       <button class="close-btn" onclick="closeAdminModal()">✕</button>
     </div>
 
@@ -487,128 +443,65 @@
         <p>Toplam Üretim</p>
       </div>
       <div class="stat-box">
-        <h3 id="statModeBreakdown">Sohbet: 0 | Story: 0</h3>
-        <p>Mod Dağılımı</p>
+        <h3>Multi-AI Havuzu</h3>
+        <p>Altyapı Durumu</p>
       </div>
     </div>
 
     <div class="setting-group">
-      <label>Kayıtlı Kullanıcılar ve İşlem Sayıları (Banlama Yönetimi)</label>
-      <div style="max-height: 150px; overflow-y: auto;">
-        <table class="user-table" id="adminUserTable">
-          <thead>
-            <tr>
-              <th>İsim</th>
-              <th>Sohbet</th>
-              <th>Story</th>
-              <th>İşlem</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Dinamik dolacak -->
-          </tbody>
-        </table>
-      </div>
+      <label>Aktif Kullanıcı Özeti</label>
+      <input type="text" id="adminUserSummary" readonly style="color: var(--text-sub);">
     </div>
 
     <div class="setting-group">
-      <label>Sistem İstemi (System Prompt - Otomatik Kaydolur)</label>
-      <div class="quick-preset-btns">
-        <div class="preset-chip" onclick="setPromptPreset('Sosyal medya flört ve diyalog koçu.')">Standart Koç</div>
-        <div class="preset-chip" onclick="setPromptPreset('Keskin nişancı gibi net, asla ezdirilmeyen, ultra karizmatik ve alfa diyalog koçu.')">Alfa Karizmatik</div>
-      </div>
-      <textarea id="adminSystemPrompt" rows="2" oninput="saveSystemPrompt()"></textarea>
+      <label>Sistem İstemi (System Prompt)</label>
+      <input type="text" id="adminSystemPrompt" value="Sosyal medya flört ve diyalog koçu." />
     </div>
 
-    <button class="primary-btn admin-btn-theme" style="margin-top: 10px;" onclick="clearStats()">Tüm İstatistikleri Sıfırla</button>
+    <button class="primary-btn admin-btn-theme" style="margin-top: 10px;" onclick="clearStats()">İstatistikleri Sıfırla</button>
   </div>
 </div>
 
 <script>
-  let userData = { id: '', name: '', age: '18-21', length: 'Kısa ve Öz', tone: 'Flörtöz' };
+  let userData = { name: '', age: '18-21', length: 'Kısa ve Öz', tone: 'Flörtöz' };
   let currentMode = 'chat';
-  let appStats = { totalAnalyses: 0, chatCount: 0, storyCount: 0 };
-  let usersRegistry = [];
-
-  const SECRET_ADMIN_TOKEN = "yonetici2026";
-  const DEFAULT_SYSTEM_PROMPT = "Sosyal medya flört ve diyalog koçu.";
+  let appStats = { totalAnalyses: 0 };
+  let secretClickCount = 0;
+  let secretClickTimer = null;
+  let selectedImageUrl = null;
 
   window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('admin_key') === SECRET_ADMIN_TOKEN) {
-      localStorage.setItem('yaziyor_is_admin_v7', 'true');
-    }
-
-    if (localStorage.getItem('yaziyor_banned_v7') === 'true') {
-      document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
-      document.getElementById('bannedScreen').classList.add('active');
-      return;
-    }
-
-    // Kullanıcı ID'sini yönet
-    let savedUserId = localStorage.getItem('yaziyor_user_id_v7');
-    if (!savedUserId) {
-      savedUserId = 'user_' + Math.random().toString(36).substring(2, 9);
-      localStorage.setItem('yaziyor_user_id_v7', savedUserId);
-    }
-    userData.id = savedUserId;
-
     const savedKey = localStorage.getItem('yaziyor_gemini_key_v7');
     const savedUser = localStorage.getItem('yaziyor_user_v7');
     const savedStats = localStorage.getItem('yaziyor_stats_v7');
-    const savedRegistry = localStorage.getItem('yaziyor_users_registry_v7');
-    const savedPrompt = localStorage.getItem('yaziyor_system_prompt_v7');
 
     if (savedStats) appStats = JSON.parse(savedStats);
-    if (savedRegistry) usersRegistry = JSON.parse(savedRegistry);
-
-    const promptInput = document.getElementById('adminSystemPrompt');
-    if (savedPrompt) {
-      promptInput.value = savedPrompt;
-    } else {
-      promptInput.value = DEFAULT_SYSTEM_PROMPT;
-      localStorage.setItem('yaziyor_system_prompt_v7', DEFAULT_SYSTEM_PROMPT);
-    }
-
-    if (savedUser) {
-      try { userData = JSON.parse(savedUser); } catch(e) {}
-      if (!userData.id) userData.id = savedUserId;
-    }
-
-    if (savedKey && savedUser && userData.name) {
+    if (savedKey && savedUser) {
+      userData = JSON.parse(savedUser);
       showDashboard();
     } else if (savedKey) {
-      document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
-      document.getElementById('step1').classList.add('active');
-    } else {
-      document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
-      document.getElementById('step0').classList.add('active');
+      nextStep(1);
     }
   };
 
   function handleSecretAdminClick() {
-    if (localStorage.getItem('yaziyor_is_admin_v7') === 'true') {
-      openAdminModal();
+    secretClickCount++;
+    clearTimeout(secretClickTimer);
+    if (secretClickCount >= 5) {
+      secretClickCount = 0;
+      const pass = prompt("Gizli Admin Şifresini Girin:");
+      if (pass === "1234") openAdminModal();
+      else if (pass !== null) alert("Hatalı şifre!");
+    } else {
+      secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1000);
     }
-  }
-
-  function saveSystemPrompt() {
-    localStorage.setItem('yaziyor_system_prompt_v7', document.getElementById('adminSystemPrompt').value);
-  }
-
-  function setPromptPreset(text) {
-    document.getElementById('adminSystemPrompt').value = text;
-    saveSystemPrompt();
   }
 
   function saveApiKey() {
     const key = document.getElementById('apiKeyInput').value.trim();
     if (!key) { alert("Lütfen geçerli bir API Key gir!"); return; }
     localStorage.setItem('yaziyor_gemini_key_v7', key);
-    
-    // API key kaydedildikten sonra doğrudan Adım 1'e (İsim girişi) geç
-    document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('step1').classList.add('active');
+    nextStep(1);
   }
 
   function selectOption(el, key, val) {
@@ -619,7 +512,7 @@
 
   function nextStep(step) {
     if(step === 2) {
-      const name = document.getElementById('userName').value.trim();
+      const name = document.getElementById('userName').value;
       if(!name) { alert("Lütfen ismini gir!"); return; }
       userData.name = name;
     }
@@ -628,7 +521,6 @@
   }
 
   function finishOnboarding() {
-    registerOrUpdateUser();
     localStorage.setItem('yaziyor_user_v7', JSON.stringify(userData));
     showDashboard();
   }
@@ -639,32 +531,19 @@
     document.getElementById('profileBtnName').innerText = userData.name || "Profil";
   }
 
-  function registerOrUpdateUser() {
-    let existing = usersRegistry.find(u => u.id === userData.id);
-    if (existing) {
-      existing.name = userData.name;
-      existing.age = userData.age;
-    } else {
-      usersRegistry.push({
-        id: userData.id,
-        name: userData.name,
-        age: userData.age,
-        chatCount: 0,
-        storyCount: 0,
-        banned: false
-      });
-    }
-    localStorage.setItem('yaziyor_users_registry_v7', JSON.stringify(usersRegistry));
-  }
-
   function setMode(mode) {
     currentMode = mode;
     document.getElementById('chatTab').classList.toggle('active', mode === 'chat');
     document.getElementById('storyTab').classList.toggle('active', mode === 'story');
-    document.getElementById('inputLabel').innerText = mode === 'chat' ? "Sohbetin Ekran Görüntüsünü Yükleyin:" : "Story'nin Ekran Görüntüsünü Yükleyin:";
+    
+    const label = document.getElementById('inputLabel');
+    if(mode === 'chat') {
+      label.innerText = "Sohbetin Ekran Görüntüsünü Yükleyin:";
+    } else {
+      label.innerText = "Story'nin Ekran Görüntüsünü Yükleyin:";
+    }
   }
 
-  let selectedImageUrl = null;
   function previewImage(input) {
     if (input.files && input.files[0]) {
       const reader = new FileReader();
@@ -688,46 +567,16 @@
   }
 
   function closeProfileModal() { document.getElementById('profileModal').classList.remove('active'); }
-  
   function openAdminModal() {
     document.getElementById('statTotalCount').innerText = appStats.totalAnalyses;
-    document.getElementById('statModeBreakdown').innerText = `Sohbet: ${appStats.chatCount || 0} | Story: ${appStats.storyCount || 0}`;
-    
-    const tbody = document.querySelector('#adminUserTable tbody');
-    tbody.innerHTML = '';
-    usersRegistry.forEach(u => {
-      tbody.innerHTML += `
-        <tr>
-          <td>${u.name}</td>
-          <td>${u.chatCount || 0}</td>
-          <td>${u.storyCount || 0}</td>
-          <td><button class="ban-btn ${u.banned ? 'banned' : ''}" onclick="toggleUserBan('${u.id}')">${u.banned ? 'Banlı (Aç)' : 'Banla'}</button></td>
-        </tr>
-      `;
-    });
-
+    document.getElementById('adminUserSummary').value = `${userData.name} (${userData.age}) - ${userData.tone}`;
     document.getElementById('adminModal').classList.add('active');
   }
-  
   function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); }
-
-  function toggleUserBan(userId) {
-    let u = usersRegistry.find(item => item.id === userId);
-    if (u) {
-      u.banned = !u.banned;
-      localStorage.setItem('yaziyor_users_registry_v7', JSON.stringify(usersRegistry));
-      openAdminModal();
-    }
-  }
-  
   function clearStats() {
-    appStats = { totalAnalyses: 0, chatCount: 0, storyCount: 0 };
-    usersRegistry.forEach(u => { u.chatCount = 0; u.storyCount = 0; });
+    appStats.totalAnalyses = 0;
     localStorage.removeItem('yaziyor_stats_v7');
-    localStorage.setItem('yaziyor_users_registry_v7', JSON.stringify(usersRegistry));
     document.getElementById('statTotalCount').innerText = 0;
-    document.getElementById('statModeBreakdown').innerText = `Sohbet: 0 | Story: 0`;
-    openAdminModal();
     alert("İstatistikler sıfırlandı!");
   }
 
@@ -736,62 +585,119 @@
     userData.age = document.getElementById('editAge').value;
     userData.length = document.getElementById('editLength').value;
     userData.tone = document.getElementById('editTone').value;
-    registerOrUpdateUser();
     localStorage.setItem('yaziyor_user_v7', JSON.stringify(userData));
     document.getElementById('profileBtnName').innerText = userData.name;
     closeProfileModal();
-    alert("Profil bilgilerin güncellendi!");
+    alert("Profil bilgilerin başarıyla güncellendi!");
   }
 
   function resetApiKey() { localStorage.clear(); location.reload(); }
 
   async function analyzeScreenshot() {
     const apiKey = localStorage.getItem('yaziyor_gemini_key_v7');
-    if (!apiKey) { alert("API Key bulunamadı."); resetApiKey(); return; }
-    if (!selectedImageUrl) { alert("Lütfen önce bir ekran görüntüsü seçin!"); return; }
+    if (!apiKey) {
+      alert("API Key bulunamadı.");
+      resetApiKey();
+      return;
+    }
+
+    if (!selectedImageUrl) {
+      alert("Lütfen önce bir ekran görüntüsü seçin!");
+      return;
+    }
 
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Analiz ediliyor...</p>";
+    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Karşı tarafın niyet analizi yapılıyor...</p>";
 
     try {
-      const { data: { text } } = await Tesseract.recognize(selectedImageUrl, 'tur+eng', { logger: m => {} });
-      if (!text || text.trim().length < 2) throw new Error("Görselde yeterli yazı okunamadı.");
+      // 1. AŞAMA: Tesseract ile tarama
+      const { data: { text } } = await Tesseract.recognize(
+        selectedImageUrl,
+        'tur+eng',
+        { logger: m => {} }
+      );
 
-      const systemContext = localStorage.getItem('yaziyor_system_prompt_v7') || DEFAULT_SYSTEM_PROMPT;
-      const promptText = `Rol: ${systemContext} - Kullanıcı: ${userData.name} (${userData.age}), Uzunluk: ${userData.length}, Ton: ${userData.tone}\nİçerik:\n"""\n${text}\n"""\n3 alternatif öneri yaz. Markdown kullan.`;
+      if (!text || text.trim().length < 2) {
+        throw new Error("Görselde yeterli yazı okunamadı. Lütfen daha net bir ekran görüntüsü yükle.");
+      }
 
-      const requestBody = JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] });
-      const modelsToTry = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-3.5-flash"];
+      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🧠 YAZIYOR Al Stratejik Motoru Çalışıyor...</p>";
+
+      const systemContext = document.getElementById('adminSystemPrompt').value;
+
+      const promptText = `Rol Bağlamı: ${systemContext}
+      Kullanıcı Bilgileri:
+      - İsmi: ${userData.name}
+      - Yaş Grubu: ${userData.age}
+      - İstenen Mesaj UZUNLUĞU: ${userData.length}
+      - İstenen Mesaj TONU: ${userData.tone}
+
+      EKRAN GÖRÜNTÜSÜNDEN OKUNAN SOHBET/İÇERİK METNİ:
+      """
+      ${text}
+      """
+
+      GÖREV:
+      ${currentMode === 'chat' 
+        ? "Yukarıdaki OCR ile taranmış sohbet akışını baştan sona incele. Karşı tarafın ruh halini ve konuşmanın gidişatını kavra. Son mesaja/duruma odaklanarak kullanıcının tercihlerine uyan 3 alternatif akıllı/etkileyici cevap önerisi yaz." 
+        : "Yukarıdaki taranmış story/paylaşım içeriğini incele. Ortama odaklanarak kullanıcının tercihlerine uygun 3 etkileyici DM açılış mesajı yaz."}
+      
+      Doğal Türkçe sosyal medya jargonunda yanıt ver. Markdown formatında sun.`;
+
+      const requestBody = JSON.stringify({
+        contents: [{
+          parts: [{ text: promptText }]
+        }]
+      });
+
+      // 2. AŞAMA: Güncel ve Kararlı Model Havuzu (Fallback Mekanizması)
+      const modelsToTry = [
+        "gemini-1.5-flash",
+        "gemini-1.5-pro",
+        "gemini-3.5-flash"
+      ];
 
       let response = null;
+      let lastError = null;
+
       for (let modelName of modelsToTry) {
         try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: requestBody
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: requestBody
           });
+
           if (res.ok) {
             const data = await res.json();
-            if (data.candidates && data.candidates.length > 0) { response = data; break; }
+            if (!data.error && data.candidates && data.candidates.length > 0) {
+              response = data;
+              break; 
+            } else if (data.error) {
+              lastError = data.error.message;
+            }
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            lastError = errData.error?.message || `HTTP ${res.status} - Model (${modelName}) erişilemedi.`;
           }
-        } catch(e) {}
+        } catch (e) {
+          lastError = e.message;
+        }
       }
 
-      if (!response) throw new Error("Yapay zeka motoruna ulaşılamadı.");
+      if (!response) {
+        throw new Error(lastError || "Tüm yapay zeka modelleri yoğun veya anahtarınız bu modellere kısıtlı.");
+      }
 
       appStats.totalAnalyses++;
-      if (currentMode === 'chat') appStats.chatCount++; else appStats.storyCount++;
       localStorage.setItem('yaziyor_stats_v7', JSON.stringify(appStats));
 
-      let regUser = usersRegistry.find(u => u.id === userData.id);
-      if (regUser) {
-        if (currentMode === 'chat') regUser.chatCount = (regUser.chatCount || 0) + 1;
-        else regUser.storyCount = (regUser.storyCount || 0) + 1;
-        localStorage.setItem('yaziyor_users_registry_v7', JSON.stringify(usersRegistry));
-      }
+      const htmlContent = marked.parse(response.candidates[0].content.parts[0].text);
+      resultsDiv.innerHTML = `<div class="result-area">${htmlContent}</div>`;
 
-      resultsDiv.innerHTML = `<div class="result-area">${marked.parse(response.candidates[0].content.parts[0].text)}</div>`;
     } catch (err) {
-      resultsDiv.innerHTML = `<p style='color:red; text-align: center;'>⚠️ Hata: ${err.message}</p>`;
+      resultsDiv.innerHTML = `<p style='color:red; font-size: 13px; line-height: 1.4; padding: 10px; text-align: center;'>⚠️ Hata: ${err.message}</p>`;
     }
   }
 </script>
