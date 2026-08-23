@@ -16,7 +16,6 @@
       --text: #FFFFFF;
       --text-sub: #8E8E9F;
       --border: #232338;
-      --admin-color: #3b82f6;
     }
 
     body {
@@ -139,11 +138,6 @@
       margin-top: auto;
     }
 
-    .admin-btn-theme {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
-      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3) !important;
-    }
-
     .header-bar {
       display: flex;
       justify-content: space-between;
@@ -153,7 +147,6 @@
     .header-bar h2 { 
       font-size: 22px; 
       margin: 0; 
-      cursor: pointer; 
       user-select: none; 
     }
     .header-bar h2 span { color: var(--primary); }
@@ -253,11 +246,6 @@
       outline: none;
       box-sizing: border-box;
     }
-
-    .stat-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-    .stat-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
-    .stat-box h3 { margin: 0 0 5px 0; font-size: 20px; color: var(--admin-color); }
-    .stat-box p { margin: 0; font-size: 11px; color: var(--text-sub); }
   </style>
 </head>
 <body>
@@ -312,7 +300,7 @@
     <div class="grid-1">
       <div class="option-card selected" onclick="selectOption(this, 'length', 'Kısa ve Öz')">
         <h4>💬 Kısa ve Öz</h4>
-        <p>Az kelime, büyük etki.</p>
+        <p>Az kelime, büyük etki (Tek cümlelik net ve vurucu).</p>
         <div class="check-icon">✓</div>
       </div>
       <div class="option-card" onclick="selectOption(this, 'length', 'Dengeli')">
@@ -322,7 +310,7 @@
       </div>
       <div class="option-card" onclick="selectOption(this, 'length', 'Uzun ve Detaylı')">
         <h4>📄 Uzun ve Detaylı</h4>
-        <p>Dolu dolu, kapsamlı mesajlar.</p>
+        <p>Derinlemesine, kapsamlı mesajlar.</p>
         <div class="check-icon">✓</div>
       </div>
     </div>
@@ -354,7 +342,7 @@
   <!-- ANA PANEL -->
   <div id="mainDashboard" class="step-screen">
     <div class="header-bar">
-      <h2 onclick="handleSecretAdminClick()">YAZIYOR <span>AI</span></h2>
+      <h2>YAZIYOR <span>AI</span></h2>
       <button class="profile-btn" onclick="openProfileModal()">
         👤 <span id="profileBtnName">Profil</span> ⚙️
       </button>
@@ -409,8 +397,8 @@
     <div class="setting-group">
       <label>Mesajlaşma Stili (Uzunluk)</label>
       <select id="editLength">
-        <option value="Kısa ve Öz">💬 Kısa ve Öz</option>
-        <option value="Dengeli">⛔ Dengeli</option>
+        <option value="Kısa ve Öz">💬 Kısa ve Öz (Tek cümle, net)</option>
+        <option value="Dengeli">⛔ Dengeli (Kararında)</option>
         <option value="Uzun ve Detaylı">📄 Uzun ve Detaylı</option>
       </select>
     </div>
@@ -429,53 +417,15 @@
   </div>
 </div>
 
-<!-- GİZLİ ADMIN PANEL MODAL -->
-<div id="adminModal" class="modal-overlay">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 style="color: var(--admin-color);">🛠️ Gizli Admin Paneli</h3>
-      <button class="close-btn" onclick="closeAdminModal()">✕</button>
-    </div>
-
-    <div class="stat-card-grid">
-      <div class="stat-box">
-        <h3 id="statTotalCount">0</h3>
-        <p>Toplam Üretim</p>
-      </div>
-      <div class="stat-box">
-        <h3>Multi-AI Havuzu</h3>
-        <p>Altyapı Durumu</p>
-      </div>
-    </div>
-
-    <div class="setting-group">
-      <label>Aktif Kullanıcı Özeti</label>
-      <input type="text" id="adminUserSummary" readonly style="color: var(--text-sub);">
-    </div>
-
-    <div class="setting-group">
-      <label>Sistem İstemi (System Prompt)</label>
-      <input type="text" id="adminSystemPrompt" value="Sosyal medya flört ve diyalog koçu." />
-    </div>
-
-    <button class="primary-btn admin-btn-theme" style="margin-top: 10px;" onclick="clearStats()">İstatistikleri Sıfırla</button>
-  </div>
-</div>
-
 <script>
   let userData = { name: '', age: '18-21', length: 'Kısa ve Öz', tone: 'Flörtöz' };
   let currentMode = 'chat';
-  let appStats = { totalAnalyses: 0 };
-  let secretClickCount = 0;
-  let secretClickTimer = null;
   let selectedImageUrl = null;
 
   window.onload = function() {
     const savedKey = localStorage.getItem('yaziyor_gemini_key_v7');
     const savedUser = localStorage.getItem('yaziyor_user_v7');
-    const savedStats = localStorage.getItem('yaziyor_stats_v7');
 
-    if (savedStats) appStats = JSON.parse(savedStats);
     if (savedKey && savedUser) {
       userData = JSON.parse(savedUser);
       showDashboard();
@@ -483,19 +433,6 @@
       nextStep(1);
     }
   };
-
-  function handleSecretAdminClick() {
-    secretClickCount++;
-    clearTimeout(secretClickTimer);
-    if (secretClickCount >= 5) {
-      secretClickCount = 0;
-      const pass = prompt("Gizli Admin Şifresini Girin:");
-      if (pass === "1234") openAdminModal();
-      else if (pass !== null) alert("Hatalı şifre!");
-    } else {
-      secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1000);
-    }
-  }
 
   function saveApiKey() {
     const key = document.getElementById('apiKeyInput').value.trim();
@@ -567,18 +504,6 @@
   }
 
   function closeProfileModal() { document.getElementById('profileModal').classList.remove('active'); }
-  function openAdminModal() {
-    document.getElementById('statTotalCount').innerText = appStats.totalAnalyses;
-    document.getElementById('adminUserSummary').value = `${userData.name} (${userData.age}) - ${userData.tone}`;
-    document.getElementById('adminModal').classList.add('active');
-  }
-  function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); }
-  function clearStats() {
-    appStats.totalAnalyses = 0;
-    localStorage.removeItem('yaziyor_stats_v7');
-    document.getElementById('statTotalCount').innerText = 0;
-    alert("İstatistikler sıfırlandı!");
-  }
 
   function saveProfileChanges() {
     userData.name = document.getElementById('editName').value;
@@ -607,10 +532,9 @@
     }
 
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Karşı tarafın niyet analizi yapılıyor...</p>";
+    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Fotoğraf taranıyor (OCR)...</p>";
 
     try {
-      // 1. AŞAMA: Tesseract ile tarama
       const { data: { text } } = await Tesseract.recognize(
         selectedImageUrl,
         'tur+eng',
@@ -621,28 +545,27 @@
         throw new Error("Görselde yeterli yazı okunamadı. Lütfen daha net bir ekran görüntüsü yükle.");
       }
 
-      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🧠 YAZIYOR Al Stratejik Motoru Çalışıyor...</p>";
+      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ Gerçekçi sokak diliyle hazırlanıyor...</p>";
 
-      const systemContext = document.getElementById('adminSystemPrompt').value;
+      // Tinder, Badoo, Happn gibi platformlara özel güncel ve doğal dil direktifi
+      const systemContext = `Sen Tinder, Badoo, Happn ve Instagram gibi platformlarda flört eden, 20'li yaşlarında çok popüler, dili son derece doğal, sokak ve sosyal medya ağzıyla konuşan bir diyalog koçusun. Asla robotik, resmi veya yapay zeka gibi uzun cümleler kurma. Tamamen gerçek bir insan gibi konuş. 
+Kullanıcının Uzunluk Tercihi: "${userData.length}" -> Eğer 'Kısa ve Öz' seçildiyse mutlaka tek cümlelik, net, vurucu ve karşı tarafa pas atan kısa cevaplar ver. Uzatmak yasak.
+Kullanıcının Ton Tercihi: "${userData.tone}"`;
 
-      const promptText = `Rol Bağlamı: ${systemContext}
-      Kullanıcı Bilgileri:
-      - İsmi: ${userData.name}
-      - Yaş Grubu: ${userData.age}
-      - İstenen Mesaj UZUNLUĞU: ${userData.length}
-      - İstenen Mesaj TONU: ${userData.tone}
+      const promptText = `${systemContext}
+Kullanıcı Profili: İsim: ${userData.name}, Yaş: ${userData.age}
 
-      EKRAN GÖRÜNTÜSÜNDEN OKUNAN SOHBET/İÇERİK METNİ:
-      """
-      ${text}
-      """
+OKUNAN EKRAN GÖRÜNTÜSÜ METNİ:
+"""
+${text}
+"""
 
-      GÖREV:
-      ${currentMode === 'chat' 
-        ? "Yukarıdaki OCR ile taranmış sohbet akışını baştan sona incele. Karşı tarafın ruh halini ve konuşmanın gidişatını kavra. Son mesaja/duruma odaklanarak kullanıcının tercihlerine uyan 3 alternatif akıllı/etkileyici cevap önerisi yaz." 
-        : "Yukarıdaki taranmış story/paylaşım içeriğini incele. Ortama odaklanarak kullanıcının tercihlerine uygun 3 etkileyici DM açılış mesajı yaz."}
-      
-      Doğal Türkçe sosyal medya jargonunda yanıt ver. Markdown formatında sun.`;
+GÖREV:
+${currentMode === 'chat' 
+  ? "Sohbetin akışına ve karşı tarafın havasına bakarak kullanıcının tercihlerine uyan 3 alternatif doğal cevap yaz." 
+  : "Story içeriğine bakarak kullanıcının tercihlerine uyan 3 etkileyici DM açılış mesajı yaz."}
+
+Kurallar: Kesinlikle robotik olmasın, gerçek sosyal medya yazışma dilinde (küçük harf uyumu, doğal slang veya akışkan tarzda) 3 alternatif sun. Markdown kullan.`;
 
       const requestBody = JSON.stringify({
         contents: [{
@@ -650,7 +573,6 @@
         }]
       });
 
-      // 2. AŞAMA: Güncel ve Kararlı Model Havuzu (Fallback Mekanizması)
       const modelsToTry = [
         "gemini-1.5-flash",
         "gemini-1.5-pro",
@@ -687,11 +609,8 @@
       }
 
       if (!response) {
-        throw new Error(lastError || "Tüm yapay zeka modelleri yoğun veya anahtarınız bu modellere kısıtlı.");
+        throw new Error(lastError || "Tüm yapay zeka modelleri yoğun veya anahtarınız kısıtlı.");
       }
-
-      appStats.totalAnalyses++;
-      localStorage.setItem('yaziyor_stats_v7', JSON.stringify(appStats));
 
       const htmlContent = marked.parse(response.candidates[0].content.parts[0].text);
       resultsDiv.innerHTML = `<div class="result-area">${htmlContent}</div>`;
