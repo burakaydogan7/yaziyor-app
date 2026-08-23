@@ -607,7 +607,7 @@
     }
 
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Fotoğraf taranıyor...</p>";
+    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Karşı tarafın niyet analizi yapılıyor...</p>";
 
     try {
       // 1. AŞAMA: Tesseract ile tarama
@@ -621,7 +621,7 @@
         throw new Error("Görselde yeterli yazı okunamadı. Lütfen daha net bir ekran görüntüsü yükle.");
       }
 
-      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ YAZIYOR...</p>";
+      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🧠 YAZIYOR Al Stratejik Motoru Çalışıyor...</p>";
 
       const systemContext = document.getElementById('adminSystemPrompt').value;
 
