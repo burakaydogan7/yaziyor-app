@@ -268,7 +268,7 @@
   <div id="step0" class="step-screen active">
     <div class="progress-bar"><div class="progress-fill" style="width: 20%"></div></div>
     <h1>API Key <span>Girişi</span></h1>
-    <p class="sub-title">YAZIYOR AI'ı Key gir.</p>
+    <p class="sub-title">YAZIYOR AI'ı kullanabilmek için Google Gemini API Key'ini gir.</p>
     <input type="password" id="apiKeyInput" class="input-box" placeholder="AIzaSy...">
     <button class="primary-btn" onclick="saveApiKey()">Başla</button>
   </div>
@@ -466,11 +466,19 @@
   let userData = { name: '', age: '18-21', length: 'Kısa ve Öz', tone: 'Flörtöz' };
   let currentMode = 'chat';
   let appStats = { totalAnalyses: 0 };
-  let secretClickCount = 0;
-  let secretClickTimer = null;
   let selectedImageUrl = null;
 
+  // Gizli admin anahtar kelimen (Bunu tarayıcı adresine ekleyeceksin)
+  const SECRET_ADMIN_TOKEN = "yonetici2026";
+
   window.onload = function() {
+    // URL parametresini kontrol et: ?admin_key=yonetici2026 şeklinde geldiğinde yetkiyi kaydet
+    const urlParams = new URLSearchParams(window.location.search);
+    const keyParam = urlParams.get('admin_key');
+    if (keyParam === SECRET_ADMIN_TOKEN) {
+      localStorage.setItem('yaziyor_is_admin_v7', 'true');
+    }
+
     const savedKey = localStorage.getItem('yaziyor_gemini_key_v7');
     const savedUser = localStorage.getItem('yaziyor_user_v7');
     const savedStats = localStorage.getItem('yaziyor_stats_v7');
@@ -484,16 +492,14 @@
     }
   };
 
+  // Artık sadece URL yetkisi olan tarayıcılarda sol üstteki başlığa tıklanınca açılır
   function handleSecretAdminClick() {
-    secretClickCount++;
-    clearTimeout(secretClickTimer);
-    if (secretClickCount >= 5) {
-      secretClickCount = 0;
-      const pass = prompt("Gizli Admin Şifresini Girin:");
-      if (pass === "1234") openAdminModal();
-      else if (pass !== null) alert("Hatalı şifre!");
+    const isAdmin = localStorage.getItem('yaziyor_is_admin_v7') === 'true';
+    if (isAdmin) {
+      openAdminModal();
     } else {
-      secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1000);
+      // Normal kullanıcılara hiçbir şey belli etmiyoruz
+      console.log("YAZIYOR AI aktif.");
     }
   }
 
@@ -567,12 +573,14 @@
   }
 
   function closeProfileModal() { document.getElementById('profileModal').classList.remove('active'); }
+  
   function openAdminModal() {
     document.getElementById('statTotalCount').innerText = appStats.totalAnalyses;
     document.getElementById('adminUserSummary').value = `${userData.name} (${userData.age}) - ${userData.tone}`;
     document.getElementById('adminModal').classList.add('active');
   }
   function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); }
+  
   function clearStats() {
     appStats.totalAnalyses = 0;
     localStorage.removeItem('yaziyor_stats_v7');
@@ -621,7 +629,7 @@
         throw new Error("Görselde yeterli yazı okunamadı. Lütfen daha net bir ekran görüntüsü yükle.");
       }
 
-      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🧠 YAZIYOR Al Stratejik Motoru Çalışıyor...</p>";
+      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🧠 YAZIYOR AI Stratejik Motoru Çalışıyor...</p>";
 
       const systemContext = document.getElementById('adminSystemPrompt').value;
 
