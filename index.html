@@ -571,7 +571,7 @@
         }]
       });
 
-      // BİRİNCİL MODEL: gemini-2.5-flash (Resmi aktif Vision modeli)
+      // BİRİNCİL MODEL: gemini-2.5-flash (Standard Hızlı Vision Modeli)
       let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -580,10 +580,10 @@
 
       let data = await response.json();
 
-      // İKİNCİL YEDEK MODEL: gemini-2.5-pro
+      // İKİNCİL YEDEK MODEL: gemini-3.1-pro-preview (Google Tarafından Önerilen Güncel Pro Sürümü)
       if (data.error) {
-        console.warn("Flash model hatası, Pro deneniyor:", data.error.message);
-        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
+        console.warn("Flash hatası, Pro Preview deneniyor:", data.error.message);
+        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: requestBody
