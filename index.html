@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YAZIYOR AI</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg-color: #07070D;
+      --card-bg: #12121E;
+      --input-bg: #1A1A2B;
+      --border-color: #232338;
+      --primary: #FF3366;
+      --primary-gradient: linear-gradient(135deg, #FF3366 0%, #FF5E3A 100%);
+      --text-main: #FFFFFF;
+      --text-sub: #8E8E9F;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; padding: 20px; }
+    .app-container { width: 100%; max-width: 440px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 28px; padding: 24px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+    .progress-bar { height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--primary-gradient); width: 100%; transition: width 0.3s ease; }
+    .step { display: none; flex-direction: column; gap: 16px; }
+    .step.active { display: flex; }
+    h1 { font-size: 22px; font-weight: 800; }
+    h1 span { color: var(--primary); }
+    p.sub { font-size: 13px; color: var(--text-sub); margin-top: -8px; }
+    input, select { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; color: #FFF; font-size: 14px; width: 100%; outline: none; }
+    .style-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .style-card { background: var(--input-bg); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s; }
+    .style-card.selected { border-color: var(--primary); background: rgba(255, 51, 102, 0.1); }
+    .style-card h3 { font-size: 14px; margin-bottom: 2px; }
+    .style-card p { font-size: 11px; color: var(--text-sub); }
+    .primary-btn { background: var(--primary-gradient); color: #FFF; border: none; border-radius: 12px; padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; }
+    .tabs { display: flex; background: var(--input-bg); border-radius: 10px; padding: 4px; }
+    .tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; color: var(--text-sub); }
+    .tab.active { background: var(--primary-gradient); color: #FFF; }
+    .upload-box { border: 2px dashed var(--primary); background: rgba(255, 51, 102, 0.05); border-radius: 16px; padding: 30px 10px; text-align: center; cursor: pointer; }
+    .preview-img { max-width: 100%; border-radius: 12px; display: none; margin-top: 10px; }
+    .result-box { background: var(--input-bg); border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px; font-size: 13px; line-height: 1.5; }
+    .settings-btn { font-size: 11px; color: var(--text-sub); text-align: center; cursor: pointer; text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <!-- STEP 0: API KEY -->
+  <div class="step active" id="step0">
+    <h1>Gemini <span>API Anahtarı</span></h1>
+    <p class="sub">Güvenliğin için API anahtarın sadece kendi tarayıcında saklanır.</p>
+    <input type="password" id="userApiKey" placeholder="AIzaSy... ile başlayan anahtarını gir">
+    <button class="primary-btn" onclick="saveApiKey()">Kaydet ve Başla</button>
+  </div>
+
+  <!-- STEP 1: PROFIL -->
+  <div class="step" id="step1">
+    <h1>Seni <span>Tanıyalım</span></h1>
+    <p class="sub">YAZIYOR AI sana özel yanıtlar hazırlasın.</p>
+    <input type="text" id="userName" placeholder="Adın">
+    <button class="primary-btn" onclick="goToStep(2)">Devam Et</button>
+  </div>
+
+  <!-- STEP 2: TARZ -->
+  <div class="step" id="step2">
+    <h1>Sohbet <span>Tarzın</span></h1>
+    <p class="sub">Cevapların hangi tonda olsun?</p>
+    <div class="style-grid">
+      <div class="style-card selected" onclick="selectStyle(this, 'Flörtöz')">
+        <h3>🔥 Flörtöz</h3>
+        <p>İma dolu, çekici ve eğlenceli.</p>
+      </div>
+      <div class="style-card" onclick="selectStyle(this, 'Esprili & Komik')">
+        <h3>😂 Esprili & Komik</h3>
+        <p>Kahkaha attıran, rahat ve doğal.</p>
+      </div>
+      <div class="style-card" onclick="selectStyle(this, 'Özgüvenli')">
+        <h3>⚡ Özgüvenli</h3>
+        <p>Net, karizmatik ve etkivaleyici.</p>
+      </div>
+    </div>
+    <button class="primary-btn" onclick="completeSetup()">Kurulumu Tamamla</button>
+  </div>
+
+  <!-- STEP 3: MAIN APP -->
+  <div class="step" id="step3">
+    <div class="tabs">
+      <div class="tab active" onclick="setTab('chat', this)">💬 Sohbet Analizi</div>
+      <div class="tab" onclick="setTab('story', this)">🔥 Hikaye Analizi</div>
+    </div>
+    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+      <span style="font-size:24px;">📸</span>
+      <p style="font-size:13px; font-weight:700; color:var(--primary); margin-top:4px;">Ekran Görüntüsü Yükle</p>
+      <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFile(this)">
+    </div>
+    <img id="imagePreview" class="preview-img">
+    <button class="primary-btn" onclick="analyzeImage()">Analiz Et & Cevap Üret</button>
+    <div class="result-box" id="resultArea" style="display:none;"></div>
+    <span class="settings-btn" onclick="resetSettings()">⚙️ Ayarları Sıfırla / API Key Değiştir</span>
+  </div>
+</div>
+
+<script>
+  let selectedTone = 'Flörtöz';
+  let activeTab = 'chat';
+  let base64Image = null;
+
+  window.onload = () => {
+    const key = localStorage.getItem('yaziyor_api_key');
+    const isSetup = localStorage.getItem('yaziyor_setup_done');
+    if(key && isSetup) {
+      showStep(3);
+    } else if(key) {
+      showStep(1);
+    }
+  };
+
+  function saveApiKey() {
+    const key = document.getElementById('userApiKey').value.trim();
+    if(!key) return alert('Lütfen geçerli bir API anahtarı girin.');
+    localStorage.setItem('yaziyor_api_key', key);
+    showStep(1);
+  }
+
+  function selectStyle(el, tone) {
+    document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedTone = tone;
+  }
+
+  function goToStep(s) { showStep(s); }
+
+  function completeSetup() {
+    localStorage.setItem('yaziyor_name', document.getElementById('userName').value);
+    localStorage.setItem('yaziyor_tone', selectedTone);
+    localStorage.setItem('yaziyor_setup_done', 'true');
+    showStep(3);
+  }
+
+  function showStep(s) {
+    document.querySelectorAll('.step').forEach(st => st.classList.remove('active'));
+    document.getElementById('step' + s).classList.add('active');
+    document.getElementById('progress').style.width = ((s + 1) * 25) + '%';
+  }
+
+  function setTab(tab, el) {
+    activeTab = tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function handleFile(input) {
+    const file = input.files[0];
+    if(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        base64Image = e.target.result.split(',')[1];
+        const img = document.getElementById('imagePreview');
+        img.src = e.target.result;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async function analyzeImage() {
+    if(!base64Image) return alert('Lütfen bir ekran görüntüsü yükleyin.');
+    const resultsDiv = document.getElementById('resultArea');
+    resultsDiv.style.display = 'block';
+    resultsDiv.innerHTML = '✨ YAZIYOR AI Görseli Analiz Ediyor...';
+
+    const apiKey = localStorage.getItem('yaziyor_api_key');
+    const name = localStorage.getItem('yaziyor_name') || 'Kullanıcı';
+    const tone = localStorage.getItem('yaziyor_tone') || 'Flörtöz';
+
+    const promptText = activeTab === 'chat' 
+      ? `Sen YAZIYOR AI adında bir flört ve iletişim koçusun. Kullanıcının adı: ${name}. Seçtiği sohbet tarzı: ${tone}. Ekran görüntüsünü incele. Karşı tarafın ilgi seviyesini belirle (%0-100) ve ${tone} tonunda verebileceği tam 3 farklı etkileyici cevap seçeneği üret.`
+      : `Sen YAZIYOR AI adında bir sosyal medya ve flört koçusun. Kullanıcının adı: ${name}. Seçtiği sohbet tarzı: ${tone}. Verilen Instagram hikayesini incele ve ${tone} tonunda hikayeye atılabilecek 3 harika yanıt önerisi üret.`;
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: promptText }, { inline_data: { mime_type: "image/jpeg", data: base64Image } }] }]
+        })
+      });
+
+      const data = await response.json();
+      if(data.error) throw new Error(data.error.message);
+
+      const htmlContent = marked.parse(data.candidates[0].content.parts[0].text);
+      resultsDiv.innerHTML = `<div class="result-area">${htmlContent}</div>`;
+    } catch (err) {
+      resultsDiv.innerHTML = `<p style="color:red;">Hata: ${err.message}</p>`;
+    }
+  }
+
+  function resetSettings() {
+    localStorage.clear();
+    location.reload();
+  }
+</script>
+
+</body>
+</html>
