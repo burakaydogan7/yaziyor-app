@@ -274,7 +274,6 @@
     }
     .preset-chip:hover { background: rgba(59, 130, 246, 0.15); }
 
-    /* Admin Kullanıcı Listesi Tablosu */
     .user-table {
       width: 100%;
       border-collapse: collapse;
@@ -414,7 +413,6 @@
     <div style="margin-bottom: 15px;">
       <label id="inputLabel" style="display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 6px;">Sohbetin Ekran Görüntüsünü Yükleyin:</label>
       
-      <!-- Görsel Seçim Alanı -->
       <div class="upload-box" onclick="document.getElementById('imageFile').click()">
         <span id="uploadText" style="font-size: 13px; color: var(--text-sub);">📷 Fotoğraf seçmek için tıkla veya sürükle</span>
         <input type="file" id="imageFile" accept="image/*" style="display:none" onchange="previewImage(this)">
@@ -527,10 +525,10 @@
 </div>
 
 <script>
-  let userData = { id: 'user_' + Math.random().toString(36.substring(2, 9)), name: '', age: '18-21', length: 'Kısa ve Öz', tone: 'Flörtöz' };
+  let userData = { id: '', name: '', age: '18-21', length: 'Kısa ve Öz', tone: 'Flörtöz' };
   let currentMode = 'chat';
   let appStats = { totalAnalyses: 0, chatCount: 0, storyCount: 0 };
-  let usersRegistry = []; // Kayıtlı kullanıcılar listesi
+  let usersRegistry = [];
 
   const SECRET_ADMIN_TOKEN = "yonetici2026";
   const DEFAULT_SYSTEM_PROMPT = "Sosyal medya flört ve diyalog koçu.";
@@ -541,12 +539,19 @@
       localStorage.setItem('yaziyor_is_admin_v7', 'true');
     }
 
-    // Ban kontrolü
     if (localStorage.getItem('yaziyor_banned_v7') === 'true') {
       document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
       document.getElementById('bannedScreen').classList.add('active');
       return;
     }
+
+    // Kullanıcı ID'sini yönet
+    let savedUserId = localStorage.getItem('yaziyor_user_id_v7');
+    if (!savedUserId) {
+      savedUserId = 'user_' + Math.random().toString(36).substring(2, 9);
+      localStorage.setItem('yaziyor_user_id_v7', savedUserId);
+    }
+    userData.id = savedUserId;
 
     const savedKey = localStorage.getItem('yaziyor_gemini_key_v7');
     const savedUser = localStorage.getItem('yaziyor_user_v7');
@@ -566,13 +571,18 @@
     }
 
     if (savedUser) {
-      userData = JSON.parse(savedUser);
+      try { userData = JSON.parse(savedUser); } catch(e) {}
+      if (!userData.id) userData.id = savedUserId;
     }
 
-    if (savedKey && savedUser) {
+    if (savedKey && savedUser && userData.name) {
       showDashboard();
     } else if (savedKey) {
-      nextStep(1);
+      document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('step1').classList.add('active');
+    } else {
+      document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('step0').classList.add('active');
     }
   };
 
@@ -595,7 +605,10 @@
     const key = document.getElementById('apiKeyInput').value.trim();
     if (!key) { alert("Lütfen geçerli bir API Key gir!"); return; }
     localStorage.setItem('yaziyor_gemini_key_v7', key);
-    nextStep(1);
+    
+    // API key kaydedildikten sonra doğrudan Adım 1'e (İsim girişi) geç
+    document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('step1').classList.add('active');
   }
 
   function selectOption(el, key, val) {
@@ -606,7 +619,7 @@
 
   function nextStep(step) {
     if(step === 2) {
-      const name = document.getElementById('userName').value;
+      const name = document.getElementById('userName').value.trim();
       if(!name) { alert("Lütfen ismini gir!"); return; }
       userData.name = name;
     }
@@ -680,7 +693,6 @@
     document.getElementById('statTotalCount').innerText = appStats.totalAnalyses;
     document.getElementById('statModeBreakdown').innerText = `Sohbet: ${appStats.chatCount || 0} | Story: ${appStats.storyCount || 0}`;
     
-    // Kullanıcı tablosunu doldur
     const tbody = document.querySelector('#adminUserTable tbody');
     tbody.innerHTML = '';
     usersRegistry.forEach(u => {
@@ -704,7 +716,7 @@
     if (u) {
       u.banned = !u.banned;
       localStorage.setItem('yaziyor_users_registry_v7', JSON.stringify(usersRegistry));
-      openAdminModal(); // Tabloyu yenile
+      openAdminModal();
     }
   }
   
@@ -766,7 +778,6 @@
 
       if (!response) throw new Error("Yapay zeka motoruna ulaşılamadı.");
 
-      // Sayaçları güncelle
       appStats.totalAnalyses++;
       if (currentMode === 'chat') appStats.chatCount++; else appStats.storyCount++;
       localStorage.setItem('yaziyor_stats_v7', JSON.stringify(appStats));
