@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YAZIYOR</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <!-- Tarayıcı içi OCR için Tesseract.js Kütüphanesi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.min.js"></script>
   <style>
     :root {
       --bg-color: #07070D;
@@ -71,11 +73,19 @@
       outline: none;
     }
 
-    textarea.input-box {
-      resize: none;
-      height: 110px;
-      font-family: inherit;
+    /* Görsel Yükleme Alanı */
+    .upload-box {
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 25px 15px;
+      text-align: center;
+      background: var(--card-bg);
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: 0.2s;
     }
+    .upload-box:hover { border-color: var(--primary); }
+    .upload-box img { max-width: 100%; max-height: 140px; border-radius: 8px; margin-top: 10px; display: none; }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
     .grid-1 { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
@@ -344,7 +354,6 @@
   <!-- ANA PANEL -->
   <div id="mainDashboard" class="step-screen">
     <div class="header-bar">
-      <!-- Gizli tetikleyici: "YAZIYOR AI" başlığına 5 kez hızlıca tıklayın -->
       <h2 onclick="handleSecretAdminClick()">YAZIYOR <span>AI</span></h2>
       <button class="profile-btn" onclick="openProfileModal()">
         👤 <span id="profileBtnName">Profil</span> ⚙️
@@ -352,16 +361,22 @@
     </div>
 
     <div class="tab-bar">
-      <div class="tab-item active" id="chatTab" onclick="setMode('chat')">💬 Sohbet Metni</div>
+      <div class="tab-item active" id="chatTab" onclick="setMode('chat')">💬 Sohbet Ekranı</div>
       <div class="tab-item" id="storyTab" onclick="setMode('story')">🔥 Story / Paylaşım</div>
     </div>
 
     <div style="margin-bottom: 15px;">
-      <label id="inputLabel" style="display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 6px;">Son Gelen Mesajı Buraya Yapıştırın:</label>
-      <textarea id="userInputText" class="input-box" placeholder="Örn: 'Bugün ne yapıyorsun?' veya 'Yoğunum biraz'"></textarea>
+      <label id="inputLabel" style="display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 6px;">Sohbetin Ekran Görüntüsünü Yükleyin:</label>
+      
+      <!-- Görsel Seçim Alanı -->
+      <div class="upload-box" onclick="document.getElementById('imageFile').click()">
+        <span id="uploadText" style="font-size: 13px; color: var(--text-sub);">📷 Fotoğraf seçmek için tıkla veya sürükle</span>
+        <input type="file" id="imageFile" accept="image/*" style="display:none" onchange="previewImage(this)">
+        <img id="imagePreview" alt="Önizleme">
+      </div>
     </div>
 
-    <button class="primary-btn" onclick="analyzeText()">Cevap Üret</button>
+    <button class="primary-btn" onclick="analyzeScreenshot()">Cevap Üret</button>
 
     <div id="results"></div>
   </div>
@@ -428,7 +443,7 @@
         <p>Toplam Üretim</p>
       </div>
       <div class="stat-box">
-        <h3>Metin Modu</h3>
+        <h3>OCR + Metin Modu</h3>
         <p>Altyapı Durumu</p>
       </div>
     </div>
@@ -453,16 +468,14 @@
   let appStats = { totalAnalyses: 0 };
   let secretClickCount = 0;
   let secretClickTimer = null;
+  let selectedImageUrl = null;
 
   window.onload = function() {
-    const savedKey = localStorage.getItem('yaziyor_gemini_key_v4');
-    const savedUser = localStorage.getItem('yaziyor_user_v4');
-    const savedStats = localStorage.getItem('yaziyor_stats_v4');
+    const savedKey = localStorage.getItem('yaziyor_gemini_key_v5');
+    const savedUser = localStorage.getItem('yaziyor_user_v5');
+    const savedStats = localStorage.getItem('yaziyor_stats_v5');
 
-    if (savedStats) {
-      appStats = JSON.parse(savedStats);
-    }
-
+    if (savedStats) appStats = JSON.parse(savedStats);
     if (savedKey && savedUser) {
       userData = JSON.parse(savedUser);
       showDashboard();
@@ -474,29 +487,20 @@
   function handleSecretAdminClick() {
     secretClickCount++;
     clearTimeout(secretClickTimer);
-
     if (secretClickCount >= 5) {
       secretClickCount = 0;
       const pass = prompt("Gizli Admin Şifresini Girin:");
-      if (pass === "1234") {
-        openAdminModal();
-      } else if (pass !== null) {
-        alert("Hatalı şifre!");
-      }
+      if (pass === "1234") openAdminModal();
+      else if (pass !== null) alert("Hatalı şifre!");
     } else {
-      secretClickTimer = setTimeout(() => {
-        secretClickCount = 0;
-      }, 1000);
+      secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1000);
     }
   }
 
   function saveApiKey() {
     const key = document.getElementById('apiKeyInput').value.trim();
-    if (!key) {
-      alert("Lütfen geçerli bir API Key gir!");
-      return;
-    }
-    localStorage.setItem('yaziyor_gemini_key_v4', key);
+    if (!key) { alert("Lütfen geçerli bir API Key gir!"); return; }
+    localStorage.setItem('yaziyor_gemini_key_v5', key);
     nextStep(1);
   }
 
@@ -517,7 +521,7 @@
   }
 
   function finishOnboarding() {
-    localStorage.setItem('yaziyor_user_v4', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v5', JSON.stringify(userData));
     showDashboard();
   }
 
@@ -533,13 +537,24 @@
     document.getElementById('storyTab').classList.toggle('active', mode === 'story');
     
     const label = document.getElementById('inputLabel');
-    const textarea = document.getElementById('userInputText');
     if(mode === 'chat') {
-      label.innerText = "Son Gelen Mesajı Buraya Yapıştırın:";
-      textarea.placeholder = "Örn: 'Bugün ne yapıyorsun?' veya 'Yoğunum biraz'";
+      label.innerText = "Sohbetin Ekran Görüntüsünü Yükleyin:";
     } else {
-      label.innerText = "Story'nin İçeriğini / Paylaşımı Özetleyin:";
-      textarea.placeholder = "Örn: 'Kahve kupası paylaşmış ve kahveye doyamıyorum yazmış'";
+      label.innerText = "Story'nin Ekran Görüntüsünü Yükleyin:";
+    }
+  }
+
+  function previewImage(input) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        selectedImageUrl = e.target.result;
+        const img = document.getElementById('imagePreview');
+        img.src = selectedImageUrl;
+        img.style.display = 'block';
+        document.getElementById('uploadText').style.display = 'none';
+      }
+      reader.readAsDataURL(input.files[0]);
     }
   }
 
@@ -551,23 +566,16 @@
     document.getElementById('profileModal').classList.add('active');
   }
 
-  function closeProfileModal() {
-    document.getElementById('profileModal').classList.remove('active');
-  }
-
+  function closeProfileModal() { document.getElementById('profileModal').classList.remove('active'); }
   function openAdminModal() {
     document.getElementById('statTotalCount').innerText = appStats.totalAnalyses;
     document.getElementById('adminUserSummary').value = `${userData.name} (${userData.age}) - ${userData.tone}`;
     document.getElementById('adminModal').classList.add('active');
   }
-
-  function closeAdminModal() {
-    document.getElementById('adminModal').classList.remove('active');
-  }
-
+  function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); }
   function clearStats() {
     appStats.totalAnalyses = 0;
-    localStorage.removeItem('yaziyor_stats_v4');
+    localStorage.removeItem('yaziyor_stats_v5');
     document.getElementById('statTotalCount').innerText = 0;
     alert("İstatistikler sıfırlandı!");
   }
@@ -577,37 +585,44 @@
     userData.age = document.getElementById('editAge').value;
     userData.length = document.getElementById('editLength').value;
     userData.tone = document.getElementById('editTone').value;
-
-    localStorage.setItem('yaziyor_user_v4', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v5', JSON.stringify(userData));
     document.getElementById('profileBtnName').innerText = userData.name;
     closeProfileModal();
     alert("Profil bilgilerin başarıyla güncellendi!");
   }
 
-  function resetApiKey() {
-    localStorage.clear();
-    location.reload();
-  }
+  function resetApiKey() { localStorage.clear(); location.reload(); }
 
-  async function analyzeText() {
-    const apiKey = localStorage.getItem('yaziyor_gemini_key_v4');
+  async function analyzeScreenshot() {
+    const apiKey = localStorage.getItem('yaziyor_gemini_key_v5');
     if (!apiKey) {
-      alert("API Key bulunamadı. Lütfen yeni anahtarınızı girin.");
+      alert("API Key bulunamadı.");
       resetApiKey();
       return;
     }
 
-    const textInput = document.getElementById('userInputText').value.trim();
-    const resultsDiv = document.getElementById('results');
-
-    if (!textInput) {
-      alert("Lütfen metin alanına bir içerik girin!");
+    if (!selectedImageUrl) {
+      alert("Lütfen önce bir ekran görüntüsü seçin!");
       return;
     }
 
-    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ YAZIYOR hazırlıyor...</p>";
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Fotoğraf taranıyor (OCR)...</p>";
 
     try {
+      // 1. AŞAMA: Tarayıcı içinde Tesseract ile görseli metne döküyoruz (Google kotası harcanmaz!)
+      const { data: { text } } = await Tesseract.recognize(
+        selectedImageUrl,
+        'tur+eng',
+        { logger: m => {} }
+      );
+
+      if (!text || text.trim().length < 2) {
+        throw new Error("Görselde yeterli yazı okunamadı. Lütfen daha net bir ekran görüntüsü yükle.");
+      }
+
+      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ YAZIYOR hazırlıyor...</p>";
+
       const systemContext = document.getElementById('adminSystemPrompt').value;
 
       const promptText = `Rol Bağlamı: ${systemContext}
@@ -617,12 +632,15 @@
       - İstenen Mesaj UZUNLUĞU: ${userData.length}
       - İstenen Mesaj TONU: ${userData.tone}
 
-      GİRDİ METİN / DURUM: "${textInput}"
+      EKRAN GÖRÜNTÜSÜNDEN OKUNAN SOHBET/İÇERİK METNİ:
+      """
+      ${text}
+      """
 
       GÖREV:
       ${currentMode === 'chat' 
-        ? "Yukarıdaki mesajı incele. Karşı tarafın olası niyetini kısaca yorumla. Ardından kullanıcının tercihlerine uyan 3 alternatif akıllı/etkileyici cevap önerisi yaz." 
-        : "Yukarıdaki hikaye/paylaşım detayını incele. Ortama odaklanarak kullanıcının tercihlerine uygun 3 etkileyici DM açılış mesajı yaz."}
+        ? "Yukarıdaki OCR ile taranmış sohbet akışını baştan sona incele. Karşı tarafın ruh halini ve konuşmanın gidişatını kavra. Son mesaja/duruma odaklanarak kullanıcının tercihlerine uyan 3 alternatif akıllı/etkileyici cevap önerisi yaz." 
+        : "Yukarıdaki taranmış story/paylaşım içeriğini incele. Ortama odaklanarak kullanıcının tercihlerine uygun 3 etkileyici DM açılış mesajı yaz."}
       
       Doğal Türkçe sosyal medya jargonunda yanıt ver. Markdown formatında sun.`;
 
@@ -632,23 +650,22 @@
         }]
       });
 
+      // 2. AŞAMA: Elde edilen metni hızlı ve kotasız Gemini modeline gönderiyoruz
       const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: requestBody
       });
 
-      const data = await response.json();
-
-      if (data.error) {
-        throw new Error(data.error.message);
-      }
+      const resData = await response.json();
+      if (resData.error) throw new Error(resData.error.message);
 
       appStats.totalAnalyses++;
-      localStorage.setItem('yaziyor_stats_v4', JSON.stringify(appStats));
+      localStorage.setItem('yaziyor_stats_v5', JSON.stringify(appStats));
 
-      const htmlContent = marked.parse(data.candidates[0].content.parts[0].text);
+      const htmlContent = marked.parse(resData.candidates[0].content.parts[0].text);
       resultsDiv.innerHTML = `<div class="result-area">${htmlContent}</div>`;
+
     } catch (err) {
       resultsDiv.innerHTML = `<p style='color:red; font-size: 13px; line-height: 1.4; padding: 10px; text-align: center;'>⚠️ Hata: ${err.message}</p>`;
     }
