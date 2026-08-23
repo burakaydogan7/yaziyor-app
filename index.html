@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YAZIYOR AI</title>
+  <title>YAZIYOR</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <!-- Tarayıcı içi OCR için Tesseract.js Kütüphanesi -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.0.2/tesseract.min.js"></script>
@@ -268,7 +268,7 @@
   <div id="step0" class="step-screen active">
     <div class="progress-bar"><div class="progress-fill" style="width: 20%"></div></div>
     <h1>API Key <span>Girişi</span></h1>
-    <p class="sub-title">YAZIYOR AI kullanabilmek için Google Gemini API Key'ini gir.</p>
+    <p class="sub-title">YAZIYOR AI'ı kullanabilmek için Google Gemini API Key'ini gir.</p>
     <input type="password" id="apiKeyInput" class="input-box" placeholder="AIzaSy...">
     <button class="primary-btn" onclick="saveApiKey()">Başla</button>
   </div>
@@ -277,7 +277,7 @@
   <div id="step1" class="step-screen">
     <div class="progress-bar"><div class="progress-fill" style="width: 40%"></div></div>
     <h1>Seni <span>Tanıyalım</span></h1>
-    <p class="sub-title">Sana özel en doğru psikolojik stratejiyi kuralım.</p>
+    <p class="sub-title">YAZIYOR AI sana özel en doğru önerileri hazırlasın.</p>
     <input type="text" id="userName" class="input-box" placeholder="İsmini Yaz...">
     <button class="primary-btn" onclick="nextStep(2)">Devam Et</button>
   </div>
@@ -286,7 +286,7 @@
   <div id="step2" class="step-screen">
     <div class="progress-bar"><div class="progress-fill" style="width: 60%"></div></div>
     <h1>Yaş <span>Aralığın</span> Nedir?</h1>
-    <p class="sub-title">Hedef kitle dinamiklerine uygun ton seçimi yapalım.</p>
+    <p class="sub-title">Sana uygun tonda iletişim tavsiyeleri verelim.</p>
     <div class="grid-2">
       <div class="option-card center selected" onclick="selectOption(this, 'age', '18-21')">
         <h4>18 - 21</h4><p>Genç Ruhlu</p>
@@ -307,12 +307,12 @@
   <!-- ADIM 3 -->
   <div id="step3" class="step-screen">
     <div class="progress-bar"><div class="progress-fill" style="width: 80%"></div></div>
-    <h1>Mesajlaşma <span>Stilin</span> Nedir?</h1>
-    <p class="sub-title">Cevapların uzunluk karakteristiğini belirle.</p>
+    <h1>Mesajlaşma <span>stilin</span> nedir?</h1>
+    <p class="sub-title">Sana en uygun mesaj tarzını seç.</p>
     <div class="grid-1">
       <div class="option-card selected" onclick="selectOption(this, 'length', 'Kısa ve Öz')">
         <h4>💬 Kısa ve Öz</h4>
-        <p>Az kelime, büyük etki ve gizem.</p>
+        <p>Az kelime, büyük etki.</p>
         <div class="check-icon">✓</div>
       </div>
       <div class="option-card" onclick="selectOption(this, 'length', 'Dengeli')">
@@ -322,7 +322,7 @@
       </div>
       <div class="option-card" onclick="selectOption(this, 'length', 'Uzun ve Detaylı')">
         <h4>📄 Uzun ve Detaylı</h4>
-        <p>Dolu dolu, derinlemesine açıklamalar.</p>
+        <p>Dolu dolu, kapsamlı mesajlar.</p>
         <div class="check-icon">✓</div>
       </div>
     </div>
@@ -333,7 +333,7 @@
   <div id="step4" class="step-screen">
     <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
     <h1>Sohbet <span>Tonun</span> Nasıl Olsun?</h1>
-    <p class="sub-title">İlişki psikolojisindeki tavrını seç.</p>
+    <p class="sub-title">Mesajlarının genel havasını belirle.</p>
     <div class="grid-1">
       <div class="option-card selected" onclick="selectOption(this, 'tone', 'Flörtöz')">
         <h4>🔥 Flörtöz</h4><p>İma dolu, çekici ve merak uyandıran.</p>
@@ -376,7 +376,7 @@
       </div>
     </div>
 
-    <button class="primary-btn" onclick="analyzeScreenshot()">Stratejik Cevap Üret</button>
+    <button class="primary-btn" onclick="analyzeScreenshot()">Cevap Üret</button>
 
     <div id="results"></div>
   </div>
@@ -433,18 +433,18 @@
 <div id="adminModal" class="modal-overlay">
   <div class="modal-content">
     <div class="modal-header">
-      <h3 style="color: var(--admin-color);">🛠️ YAZIYOR AI Motor Ayarları</h3>
+      <h3 style="color: var(--admin-color);">🛠️ Gizli Admin Paneli</h3>
       <button class="close-btn" onclick="closeAdminModal()">✕</button>
     </div>
 
     <div class="stat-card-grid">
       <div class="stat-box">
         <h3 id="statTotalCount">0</h3>
-        <p>Toplam Analiz</p>
+        <p>Toplam Üretim</p>
       </div>
       <div class="stat-box">
-        <h3 style="color: #22c55e;">Aktif</h3>
-        <p>Stratejik Motor</p>
+        <h3>Multi-AI Havuzu</h3>
+        <p>Altyapı Durumu</p>
       </div>
     </div>
 
@@ -454,8 +454,8 @@
     </div>
 
     <div class="setting-group">
-      <label>Gelişmiş Sistem İstemi (System Prompt)</label>
-      <input type="text" id="adminSystemPrompt" value="Dünyanın en iyi flört, ilişki psikolojisi ve sosyal dinamikler koçusun. Karşı tarafın niyetini okur, it-çek (push-pull) taktikleriyle kontrolü kullanıcıya verirsin." />
+      <label>Sistem İstemi (System Prompt)</label>
+      <input type="text" id="adminSystemPrompt" value="Sosyal medya flört ve diyalog koçu." />
     </div>
 
     <button class="primary-btn admin-btn-theme" style="margin-top: 10px;" onclick="clearStats()">İstatistikleri Sıfırla</button>
@@ -471,9 +471,9 @@
   let selectedImageUrl = null;
 
   window.onload = function() {
-    const savedKey = localStorage.getItem('yaziyor_pro_key_v1');
-    const savedUser = localStorage.getItem('yaziyor_pro_user_v1');
-    const savedStats = localStorage.getItem('yaziyor_pro_stats_v1');
+    const savedKey = localStorage.getItem('yaziyor_gemini_key_v7');
+    const savedUser = localStorage.getItem('yaziyor_user_v7');
+    const savedStats = localStorage.getItem('yaziyor_stats_v7');
 
     if (savedStats) appStats = JSON.parse(savedStats);
     if (savedKey && savedUser) {
@@ -489,7 +489,7 @@
     clearTimeout(secretClickTimer);
     if (secretClickCount >= 5) {
       secretClickCount = 0;
-      const pass = prompt("Admin Şifresini Girin:");
+      const pass = prompt("Gizli Admin Şifresini Girin:");
       if (pass === "1234") openAdminModal();
       else if (pass !== null) alert("Hatalı şifre!");
     } else {
@@ -500,7 +500,7 @@
   function saveApiKey() {
     const key = document.getElementById('apiKeyInput').value.trim();
     if (!key) { alert("Lütfen geçerli bir API Key gir!"); return; }
-    localStorage.setItem('yaziyor_pro_key_v1', key);
+    localStorage.setItem('yaziyor_gemini_key_v7', key);
     nextStep(1);
   }
 
@@ -521,7 +521,7 @@
   }
 
   function finishOnboarding() {
-    localStorage.setItem('yaziyor_pro_user_v1', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v7', JSON.stringify(userData));
     showDashboard();
   }
 
@@ -575,7 +575,7 @@
   function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); }
   function clearStats() {
     appStats.totalAnalyses = 0;
-    localStorage.removeItem('yaziyor_pro_stats_v1');
+    localStorage.removeItem('yaziyor_stats_v7');
     document.getElementById('statTotalCount').innerText = 0;
     alert("İstatistikler sıfırlandı!");
   }
@@ -585,7 +585,7 @@
     userData.age = document.getElementById('editAge').value;
     userData.length = document.getElementById('editLength').value;
     userData.tone = document.getElementById('editTone').value;
-    localStorage.setItem('yaziyor_pro_user_v1', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v7', JSON.stringify(userData));
     document.getElementById('profileBtnName').innerText = userData.name;
     closeProfileModal();
     alert("Profil bilgilerin başarıyla güncellendi!");
@@ -594,7 +594,7 @@
   function resetApiKey() { localStorage.clear(); location.reload(); }
 
   async function analyzeScreenshot() {
-    const apiKey = localStorage.getItem('yaziyor_pro_key_v1');
+    const apiKey = localStorage.getItem('yaziyor_gemini_key_v7');
     if (!apiKey) {
       alert("API Key bulunamadı.");
       resetApiKey();
@@ -607,9 +607,10 @@
     }
 
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Karşı tarafın niyet analizi yapılıyor (OCR)...</p>";
+    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🔍 Fotoğraf taranıyor (OCR)...</p>";
 
     try {
+      // 1. AŞAMA: Tesseract ile tarama
       const { data: { text } } = await Tesseract.recognize(
         selectedImageUrl,
         'tur+eng',
@@ -620,29 +621,28 @@
         throw new Error("Görselde yeterli yazı okunamadı. Lütfen daha net bir ekran görüntüsü yükle.");
       }
 
-      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>🧠 YAZIYOR AI Stratejik Motoru Çalışıyor...</p>";
+      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ YAZIYOR (Multi-AI Havuzu) hazırlıyor...</p>";
 
       const systemContext = document.getElementById('adminSystemPrompt').value;
 
-      const promptText = `Sistem Rolü: ${systemContext}
-      
-      Kullanıcı Profili:
+      const promptText = `Rol Bağlamı: ${systemContext}
+      Kullanıcı Bilgileri:
       - İsmi: ${userData.name}
       - Yaş Grubu: ${userData.age}
-      - Hedeflenen Mesaj Boyutu: ${userData.length}
-      - Hedeflenen Konuşma Tonu: ${userData.tone}
+      - İstenen Mesaj UZUNLUĞU: ${userData.length}
+      - İstenen Mesaj TONU: ${userData.tone}
 
-      Ekranda Okunan Metin:
+      EKRAN GÖRÜNTÜSÜNDEN OKUNAN SOHBET/İÇERİK METNİ:
       """
       ${text}
       """
 
-      VERİLECEK YANIT FORMATI VE İÇERİĞİ:
-      Yanıtını mutlaka şu başlıklar altında Markdown formatında sun:
-
-      1. **🔍 Durum & Niyet Analizi:** Karşı tarafın ruh hali, yazdığı cümlenin alt metni (test mi ediyor, kaçıyor mu, ilgili mi?) kısaca nedir?
-      2. **💡 Stratejik Yaklaşım:** Bu aşamada kullanıcının hangi psikolojik hamleyi yapması gerekir (örneğin: gizem yarat, hafif geri çekil, merak uyandır vb.)?
-      3. **💬 Alternatif Yanıt Önerileri:** Kullanıcının tercihlerine (${userData.length} ve ${userData.tone}) birebir uyan, doğrudan kopyalayıp yapıştırabileceği **3 farklı etkileyici seçenek** sun. Her seçeneğin altında o cümlenin neden etkili olduğunu parantez içinde açıkla.`;
+      GÖREV:
+      ${currentMode === 'chat' 
+        ? "Yukarıdaki OCR ile taranmış sohbet akışını baştan sona incele. Karşı tarafın ruh halini ve konuşmanın gidişatını kavra. Son mesaja/duruma odaklanarak kullanıcının tercihlerine uyan 3 alternatif akıllı/etkileyici cevap önerisi yaz." 
+        : "Yukarıdaki taranmış story/paylaşım içeriğini incele. Ortama odaklanarak kullanıcının tercihlerine uygun 3 etkileyici DM açılış mesajı yaz."}
+      
+      Doğal Türkçe sosyal medya jargonunda yanıt ver. Markdown formatında sun.`;
 
       const requestBody = JSON.stringify({
         contents: [{
@@ -650,6 +650,7 @@
         }]
       });
 
+      // 2. AŞAMA: Güncel ve Kararlı Model Havuzu (Fallback Mekanizması)
       const modelsToTry = [
         "gemini-1.5-flash",
         "gemini-1.5-pro",
@@ -686,11 +687,11 @@
       }
 
       if (!response) {
-        throw new Error(lastError || "Yapay zeka motoru yoğun. Lütfen tekrar dene.");
+        throw new Error(lastError || "Tüm yapay zeka modelleri yoğun veya anahtarınız bu modellere kısıtlı.");
       }
 
       appStats.totalAnalyses++;
-      localStorage.setItem('yaziyor_pro_stats_v1', JSON.stringify(appStats));
+      localStorage.setItem('yaziyor_stats_v7', JSON.stringify(appStats));
 
       const htmlContent = marked.parse(response.candidates[0].content.parts[0].text);
       resultsDiv.innerHTML = `<div class="result-area">${htmlContent}</div>`;
