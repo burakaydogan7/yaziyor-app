@@ -426,8 +426,8 @@
   let selectedImageUrl = null;
 
   window.onload = function() {
-    const geminiKey = localStorage.getItem('yaziyor_gemini_key_v9');
-    const savedUser = localStorage.getItem('yaziyor_user_v9');
+    const geminiKey = localStorage.getItem('yaziyor_gemini_key_v10');
+    const savedUser = localStorage.getItem('yaziyor_user_v10');
 
     if (geminiKey && savedUser) {
       userData = JSON.parse(savedUser);
@@ -441,10 +441,10 @@
     const gKey = document.getElementById('geminiKeyInput').value.trim();
     if (!gKey) { alert("En azından Gemini API Key girmelisin!"); return; }
     
-    localStorage.setItem('yaziyor_gemini_key_v9', gKey);
-    localStorage.setItem('yaziyor_openai_key_v9', document.getElementById('openaiKeyInput').value.trim());
-    localStorage.setItem('yaziyor_anthropic_key_v9', document.getElementById('anthropicKeyInput').value.trim());
-    localStorage.setItem('yaziyor_grok_key_v9', document.getElementById('grokKeyInput').value.trim());
+    localStorage.setItem('yaziyor_gemini_key_v10', gKey);
+    localStorage.setItem('yaziyor_openai_key_v10', document.getElementById('openaiKeyInput').value.trim());
+    localStorage.setItem('yaziyor_anthropic_key_v10', document.getElementById('anthropicKeyInput').value.trim());
+    localStorage.setItem('yaziyor_grok_key_v10', document.getElementById('grokKeyInput').value.trim());
     
     nextStep(1);
   }
@@ -466,7 +466,7 @@
   }
 
   function finishOnboarding() {
-    localStorage.setItem('yaziyor_user_v9', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v10', JSON.stringify(userData));
     showDashboard();
   }
 
@@ -502,10 +502,10 @@
     document.getElementById('editAge').value = userData.age;
     document.getElementById('editLength').value = userData.length;
     document.getElementById('editTone').value = userData.tone;
-    document.getElementById('editGeminiKey').value = localStorage.getItem('yaziyor_gemini_key_v9') || '';
-    document.getElementById('editOpenaiKey').value = localStorage.getItem('yaziyor_openai_key_v9') || '';
-    document.getElementById('editAnthropicKey').value = localStorage.getItem('yaziyor_anthropic_key_v9') || '';
-    document.getElementById('editGrokKey').value = localStorage.getItem('yaziyor_grok_key_v9') || '';
+    document.getElementById('editGeminiKey').value = localStorage.getItem('yaziyor_gemini_key_v10') || '';
+    document.getElementById('editOpenaiKey').value = localStorage.getItem('yaziyor_openai_key_v10') || '';
+    document.getElementById('editAnthropicKey').value = localStorage.getItem('yaziyor_anthropic_key_v10') || '';
+    document.getElementById('editGrokKey').value = localStorage.getItem('yaziyor_grok_key_v10') || '';
     document.getElementById('profileModal').classList.add('active');
   }
 
@@ -516,12 +516,12 @@
     userData.age = document.getElementById('editAge').value;
     userData.length = document.getElementById('editLength').value;
     userData.tone = document.getElementById('editTone').value;
-    localStorage.setItem('yaziyor_user_v9', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v10', JSON.stringify(userData));
 
-    localStorage.setItem('yaziyor_gemini_key_v9', document.getElementById('editGeminiKey').value.trim());
-    localStorage.setItem('yaziyor_openai_key_v9', document.getElementById('editOpenaiKey').value.trim());
-    localStorage.setItem('yaziyor_anthropic_key_v9', document.getElementById('editAnthropicKey').value.trim());
-    localStorage.setItem('yaziyor_grok_key_v9', document.getElementById('editGrokKey').value.trim());
+    localStorage.setItem('yaziyor_gemini_key_v10', document.getElementById('editGeminiKey').value.trim());
+    localStorage.setItem('yaziyor_openai_key_v10', document.getElementById('editOpenaiKey').value.trim());
+    localStorage.setItem('yaziyor_anthropic_key_v10', document.getElementById('editAnthropicKey').value.trim());
+    localStorage.setItem('yaziyor_grok_key_v10', document.getElementById('editGrokKey').value.trim());
 
     document.getElementById('profileBtnName').innerText = userData.name;
     closeProfileModal();
@@ -530,12 +530,12 @@
 
   function resetAll() { localStorage.clear(); location.reload(); }
 
-  // TEK VE KARARLI MODEL ÜZERİNDEN ÇALIŞAN SİSTEM
+  // GÜNCELLENMİŞ GEMİNİ MODELİ (gemini-3.5-flash)
   async function analyzeScreenshot() {
-    const gKey = localStorage.getItem('yaziyor_gemini_key_v9');
-    const oKey = localStorage.getItem('yaziyor_openai_key_v9');
-    const aKey = localStorage.getItem('yaziyor_anthropic_key_v9');
-    const xKey = localStorage.getItem('yaziyor_grok_key_v9');
+    const gKey = localStorage.getItem('yaziyor_gemini_key_v10');
+    const oKey = localStorage.getItem('yaziyor_openai_key_v10');
+    const aKey = localStorage.getItem('yaziyor_anthropic_key_v10');
+    const xKey = localStorage.getItem('yaziyor_grok_key_v10');
 
     if (!gKey && !oKey && !aKey && !xKey) {
       alert("Hiçbir API Key bulunamadı!");
@@ -581,10 +581,10 @@ Kurallar: Kesinlikle robotik olmasın, gerçek sosyal medya yazışma dilinde 3 
 
       let aiResponseText = null;
 
-      // 1. ADIM: GEMİNİ (Tek ve en kararlı model: gemini-1.5-flash)
+      // 1. ADIM: GEMİNİ (Güncel Kararlı Model: gemini-3.5-flash)
       if (gKey && !aiResponseText) {
         try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${gKey}`;
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${gKey}`;
           const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
