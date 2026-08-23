@@ -3,182 +3,288 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YAZIYOR AI</title>
+  <title>YAZIYOR</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     :root {
       --bg-color: #07070D;
       --card-bg: #12121E;
-      --input-bg: #1A1A2B;
-      --border-color: #232338;
       --primary: #FF3366;
       --primary-gradient: linear-gradient(135deg, #FF3366 0%, #FF5E3A 100%);
-      --text-main: #FFFFFF;
+      --text: #FFFFFF;
       --text-sub: #8E8E9F;
+      --border: #232338;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; padding: 20px; }
-    .app-container { width: 100%; max-width: 440px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 28px; padding: 24px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
-    .progress-bar { height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--primary-gradient); width: 16%; transition: width 0.3s ease; }
-    .step { display: none; flex-direction: column; gap: 16px; }
-    .step.active { display: flex; }
-    h1 { font-size: 22px; font-weight: 800; }
-    h1 span { color: var(--primary); }
-    p.sub { font-size: 13px; color: var(--text-sub); margin-top: -8px; }
-    input { background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; color: #FFF; font-size: 14px; width: 100%; outline: none; }
-    
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .style-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
-    
-    .option-card { background: var(--input-bg); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 14px; cursor: pointer; transition: 0.2s; text-align: center; }
-    .option-card.selected { border-color: var(--primary); background: rgba(255, 51, 102, 0.12); box-shadow: 0 0 15px rgba(255, 51, 102, 0.2); }
-    .option-card h3 { font-size: 15px; margin-bottom: 2px; }
-    .option-card p { font-size: 11px; color: var(--text-sub); }
 
-    .primary-btn { background: var(--primary-gradient); color: #FFF; border: none; border-radius: 12px; padding: 14px; font-size: 14px; font-weight: 700; cursor: pointer; text-align: center; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3); }
-    .tabs { display: flex; background: var(--input-bg); border-radius: 10px; padding: 4px; }
-    .tab { flex: 1; text-align: center; padding: 8px; font-size: 12px; font-weight: 700; border-radius: 8px; cursor: pointer; color: var(--text-sub); }
-    .tab.active { background: var(--primary-gradient); color: #FFF; }
-    .upload-box { border: 2px dashed var(--primary); background: rgba(255, 51, 102, 0.05); border-radius: 16px; padding: 30px 10px; text-align: center; cursor: pointer; }
-    .preview-img { max-width: 100%; border-radius: 12px; display: none; margin-top: 10px; }
-    .result-box { background: var(--input-bg); border-left: 4px solid var(--primary); border-radius: 10px; padding: 14px; font-size: 13px; line-height: 1.5; }
-    .settings-btn { font-size: 11px; color: var(--text-sub); text-align: center; cursor: pointer; text-decoration: underline; margin-top: 10px; }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step-screen { display: none; }
+    .step-screen.active { display: flex; flex-direction: column; flex: 1; }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--primary-gradient);
+      transition: width 0.3s ease;
+    }
+
+    h1 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+    h1 span { color: var(--primary); }
+    p.sub-title { color: var(--text-sub); font-size: 13px; margin-bottom: 25px; line-height: 1.4; }
+
+    .input-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      color: #fff;
+      font-size: 16px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .grid-1 { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+
+    .option-card {
+      background: var(--card-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: 0.2s;
+      position: relative;
+    }
+    .option-card.selected {
+      border-color: var(--primary);
+      background: rgba(255, 51, 102, 0.08);
+    }
+    .option-card.center { text-align: center; }
+    .option-card h4 { margin: 0 0 4px 0; font-size: 15px; color: #fff; }
+    .option-card p { margin: 0; font-size: 12px; color: var(--text-sub); }
+
+    .check-icon {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: white;
+    }
+    .option-card.selected .check-icon { display: flex; }
+
+    .primary-btn {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(255, 51, 102, 0.3);
+      width: 100%;
+      margin-top: auto;
+    }
+
+    /* Main Dashboard */
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h2 { font-size: 22px; margin: 0; }
+    .header h2 span { color: var(--primary); }
+
+    .tab-bar {
+      display: flex;
+      background: var(--card-bg);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .tab-item {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-sub);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .tab-item.active { background: var(--primary-gradient); color: #fff; }
+
+    .upload-card {
+      border: 2px dashed var(--primary);
+      background: rgba(255, 51, 102, 0.03);
+      border-radius: 20px;
+      padding: 30px 20px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .result-area {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 15px;
+      border-left: 4px solid var(--primary);
+      line-height: 1.5;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
 
 <div class="app-container">
-  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
 
-  <!-- EKRAN 1: API KEY -->
-  <div class="step active" id="step0">
-    <h1>Gemini <span>API Anahtarı</span></h1>
-    <p class="sub">API anahtarın tarayıcında özel olarak saklanır.</p>
-    <input type="password" id="userApiKey" placeholder="AIzaSy... anahtarını gir">
-    <button class="primary-btn" onclick="saveApiKey()">Devam Et</button>
-  </div>
-
-  <!-- EKRAN 2: İSİM -->
-  <div class="step" id="step1">
+  <!-- ADIM 1: KULLANICI İSMİ -->
+  <div id="step1" class="step-screen active">
+    <div class="progress-bar"><div class="progress-fill" style="width: 25%"></div></div>
     <h1>Seni <span>Tanıyalım</span></h1>
-    <p class="sub">Sana ismiyle hitap eden özel yanıtlar oluşturalım.</p>
-    <input type="text" id="userName" placeholder="Adın veya Takma Adın">
+    <p class="sub-title">YAZIYOR AI sana özel en doğru önerileri hazırlasın.</p>
+    <input type="text" id="userName" class="input-box" placeholder="İsmini Yaz...">
     <button class="primary-btn" onclick="nextStep(2)">Devam Et</button>
   </div>
 
-  <!-- EKRAN 3: CİNSİYET SEÇİMİ -->
-  <div class="step" id="step2">
-    <h1>Cinsiyetin <span>Nedir?</span></h1>
-    <p class="sub">Doğru tonda tavsiyeler vermek için kullanacağız.</p>
+  <!-- ADIM 2: YAŞ SEÇİMİ -->
+  <div id="step2" class="step-screen">
+    <div class="progress-bar"><div class="progress-fill" style="width: 50%"></div></div>
+    <h1>Yaş <span>Aralığın</span> Nedir?</h1>
+    <p class="sub-title">Sana uygun tonda iletişim tavsiyeleri verelim.</p>
     <div class="grid-2">
-      <div class="option-card selected" onclick="selectOption(this, 'gender', 'Erkek')">
-        <h3>👨 Erkek</h3>
+      <div class="option-card center selected" onclick="selectOption(this, 'age', '18-21')">
+        <h4>18 - 21</h4><p>Genç Ruhlu</p>
       </div>
-      <div class="option-card" onclick="selectOption(this, 'gender', 'Kadın')">
-        <h3>👩 Kadın</h3>
+      <div class="option-card center" onclick="selectOption(this, 'age', '22-26')">
+        <h4>22 - 26</h4><p>Enerjik</p>
+      </div>
+      <div class="option-card center" onclick="selectOption(this, 'age', '27-32')">
+        <h4>27 - 32</h4><p>Olgun</p>
+      </div>
+      <div class="option-card center" onclick="selectOption(this, 'age', '33+')">
+        <h4>33+</h4><p>Karizmatik</p>
       </div>
     </div>
     <button class="primary-btn" onclick="nextStep(3)">Devam Et</button>
   </div>
 
-  <!-- EKRAN 4: YAŞ ARALIĞI -->
-  <div class="step" id="step3">
-    <h1>Yaş <span>Aralığın</span></h1>
-    <p class="sub">Yaş grubuna uygun iletişim tarzını belirleyelim.</p>
-    <div class="grid-2">
-      <div class="option-card selected" onclick="selectOption(this, 'age', '18-21')">
-        <h3>18 - 21</h3><p>Genç Ruhlu</p>
+  <!-- ADIM 3: MESAJLAŞMA UZUNLUĞU / STİLİ (SENİN ATTIĞIN EKRAN) -->
+  <div id="step3" class="step-screen">
+    <div class="progress-bar"><div class="progress-fill" style="width: 75%"></div></div>
+    <h1>Mesajlaşma <span>stilin</span> nedir?</h1>
+    <p class="sub-title">Sana en uygun mesaj tarzını seç, YAZIYOR buna göre öneri yapsın.</p>
+    <div class="grid-1">
+      <div class="option-card selected" onclick="selectOption(this, 'length', 'Kısa ve Öz')">
+        <h4>💬 Kısa ve Öz</h4>
+        <p>Az kelime, büyük etki.</p>
+        <div class="check-icon">✓</div>
       </div>
-      <div class="option-card" onclick="selectOption(this, 'age', '22-26')">
-        <h3>22 - 26</h3><p>Enerjik</p>
+      <div class="option-card" onclick="selectOption(this, 'length', 'Dengeli')">
+        <h4>⛔ Dengeli</h4>
+        <p>Ne eksik ne fazla, tam kararında.</p>
+        <div class="check-icon">✓</div>
       </div>
-      <div class="option-card" onclick="selectOption(this, 'age', '27-32')">
-        <h3>27 - 32</h3><p>Olgun</p>
-      </div>
-      <div class="option-card" onclick="selectOption(this, 'age', '33+')">
-        <h3>33+</h3><p>Deneyimli</p>
+      <div class="option-card" onclick="selectOption(this, 'length', 'Uzun ve Detaylı')">
+        <h4>📄 Uzun ve Detaylı</h4>
+        <p>Dolu dolu, kapsamlı mesajlar.</p>
+        <div class="check-icon">✓</div>
       </div>
     </div>
     <button class="primary-btn" onclick="nextStep(4)">Devam Et</button>
   </div>
 
-  <!-- EKRAN 5: İLİŞKİ HEDEFİ -->
-  <div class="step" id="step4">
-    <h1>Aradığın <span>İlişki</span></h1>
-    <p class="sub">Yanıtların amacına uygun hazırlanmasını sağlar.</p>
-    <div class="style-grid">
-      <div class="style-card option-card selected" onclick="selectOption(this, 'goal', 'Flört & Eğlence')">
-        <h3>🔥 Flört & Eğlence</h3><p>Rahat, eğlenceli ve çekici sohbetler.</p>
+  <!-- ADIM 4: SOHBET TONU -->
+  <div id="step4" class="step-screen">
+    <div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>
+    <h1>Sohbet <span>Tonun</span> Nasıl Olsun?</h1>
+    <p class="sub-title">Mesajlarının genel havasını belirle.</p>
+    <div class="grid-1">
+      <div class="option-card selected" onclick="selectOption(this, 'tone', 'Flörtöz')">
+        <h4>🔥 Flörtöz</h4><p>İma dolu, çekici ve merak uyandıran.</p>
+        <div class="check-icon">✓</div>
       </div>
-      <div class="style-card option-card" onclick="selectOption(this, 'goal', 'Ciddi İlişki')">
-        <h3>❤️ Ciddi İlişki</h3><p>Derin, samimi ve güven veren diyaloglar.</p>
+      <div class="option-card" onclick="selectOption(this, 'tone', 'Esprili')">
+        <h4>😂 Esprili & Komik</h4><p>Kahkaha attıran, rahat ve doğal.</p>
+        <div class="check-icon">✓</div>
       </div>
-      <div class="style-card option-card" onclick="selectOption(this, 'goal', 'Arkadaşlık')">
-        <h3>💬 Arkadaşlık</h3><p>Sıcak, akıcı ve doğal iletişim.</p>
+      <div class="option-card" onclick="selectOption(this, 'tone', 'Özgüvenli')">
+        <h4>⚡ Özgüvenli & Gizemli</h4><p>Net, karizmatik ve mesafe koruyan.</p>
+        <div class="check-icon">✓</div>
       </div>
     </div>
-    <button class="primary-btn" onclick="nextStep(5)">Devam Et</button>
+    <button class="primary-btn" onclick="finishOnboarding()">Kurulumu Tamamla</button>
   </div>
 
-  <!-- EKRAN 6: SOHBET TARZI -->
-  <div class="step" id="step5">
-    <h1>Mesajlaşma <span>Tarzın</span></h1>
-    <p class="sub">Önerilen yanıtların üslubunu seç.</p>
-    <div class="style-grid">
-      <div class="style-card option-card selected" onclick="selectOption(this, 'style', 'Flörtöz')">
-        <h3>🔥 Flörtöz & Çekici</h3><p>İma dolu ve merak uyandıran yanıtlar.</p>
-      </div>
-      <div class="style-card option-card" onclick="selectOption(this, 'style', 'Esprili')">
-        <h3>😂 Esprili & Rahat</h3><p>Eğlenceli ve kahkaha attıran diyaloglar.</p>
-      </div>
-      <div class="style-card option-card" onclick="selectOption(this, 'style', 'Özgüvenli')">
-        <h3>⚡ Özgüvenli & Gizemli</h3><p>Net, karizmatik ve etkileyici cümleler.</p>
-      </div>
+  <!-- ANA ANALİZ PANELİ -->
+  <div id="mainDashboard" class="step-screen">
+    <div class="header">
+      <h2>YAZIYOR <span>AI</span></h2>
     </div>
-    <button class="primary-btn" onclick="completeSetup()">Kurulumu Tamamla</button>
-  </div>
 
-  <!-- EKRAN 7: ANA ANALİZ EKRANI -->
-  <div class="step" id="step6">
-    <div class="tabs">
-      <div class="tab active" onclick="setTab('chat', this)">💬 Sohbet Analizi</div>
-      <div class="tab" onclick="setTab('story', this)">🔥 Hikaye Analizi</div>
+    <div class="tab-bar">
+      <div class="tab-item active" id="chatTab" onclick="setMode('chat')">💬 Sohbet Analizi</div>
+      <div class="tab-item" id="storyTab" onclick="setMode('story')">🔥 Hikayeye Yanıt</div>
     </div>
-    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-      <span style="font-size:28px;">📸</span>
-      <p style="font-size:13px; font-weight:700; color:var(--primary); margin-top:4px;">Ekran Görüntüsü Yükle</p>
-      <p style="font-size:11px; color:var(--text-sub);">DM veya Story görselini seçin</p>
-      <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFile(this)">
+
+    <div class="upload-card" onclick="document.getElementById('fileInput').click()">
+      <span style="font-size: 32px; display:block; margin-bottom: 8px;">📸</span>
+      <strong id="uploadText" style="color: var(--primary);">Ekran Görüntüsü Yükle</strong>
+      <p style="font-size: 12px; color: var(--text-sub); margin-top: 5px;">Sohbetin veya Story'nin resmini seç</p>
+      <input type="file" id="fileInput" accept="image/*" style="display:none;" onchange="handleFileSelect()">
     </div>
-    <img id="imagePreview" class="preview-img">
+
     <button class="primary-btn" onclick="analyzeImage()">Analiz Et & Cevap Üret</button>
-    <div class="result-box" id="resultArea" style="display:none;"></div>
-    <span class="settings-btn" onclick="resetSettings()">⚙️ Profil Ayarlarını Sıfırla</span>
+
+    <div id="results"></div>
   </div>
+
 </div>
 
 <script>
-  let userData = { gender: 'Erkek', age: '18-21', goal: 'Flört & Eğlence', style: 'Flörtöz' };
-  let activeTab = 'chat';
-  let base64Image = null;
+  const API_KEY = "BURAYA_API_KEY_GELECEK"; 
+  let userData = { name: '', age: '18-21', length: 'Kısa ve Öz', tone: 'Flörtöz' };
+  let currentMode = 'chat';
 
-  window.onload = () => {
-    const key = localStorage.getItem('yaziyor_api_key');
-    const isSetup = localStorage.getItem('yaziyor_setup_done');
-    if(key && isSetup) {
-      showStep(6);
-    } else if(key) {
-      showStep(1);
+  window.onload = function() {
+    const saved = localStorage.getItem('yaziyor_user_v2');
+    if(saved) {
+      userData = JSON.parse(saved);
+      showDashboard();
     }
   };
-
-  function saveApiKey() {
-    const key = document.getElementById('userApiKey').value.trim();
-    if(!key) return alert('Lütfen geçerli bir API anahtarı girin.');
-    localStorage.setItem('yaziyor_api_key', key);
-    showStep(1);
-  }
 
   function selectOption(el, key, val) {
     el.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
@@ -186,69 +292,100 @@
     userData[key] = val;
   }
 
-  function nextStep(s) {
-    if(s === 2 && !document.getElementById('userName').value.trim()) {
-      return alert('Lütfen isminizi girin.');
+  function nextStep(step) {
+    if(step === 2) {
+      const name = document.getElementById('userName').value;
+      if(!name) { alert("Lütfen ismini gir!"); return; }
+      userData.name = name;
     }
-    showStep(s);
+    document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + step).classList.add('active');
   }
 
-  function completeSetup() {
-    localStorage.setItem('yaziyor_name', document.getElementById('userName').value);
-    localStorage.setItem('yaziyor_userdata', JSON.stringify(userData));
-    localStorage.setItem('yaziyor_setup_done', 'true');
-    showStep(6);
+  function finishOnboarding() {
+    localStorage.setItem('yaziyor_user_v2', JSON.stringify(userData));
+    showDashboard();
   }
 
-  function showStep(s) {
-    document.querySelectorAll('.step').forEach(st => st.classList.remove('active'));
-    document.getElementById('step' + s).classList.add('active');
-    document.getElementById('progress').style.width = ((s + 1) * 14) + '%';
+  function showDashboard() {
+    document.querySelectorAll('.step-screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('mainDashboard').classList.add('active');
   }
 
-  function setTab(tab, el) {
-    activeTab = tab;
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('chatTab').classList.toggle('active', mode === 'chat');
+    document.getElementById('storyTab').classList.toggle('active', mode === 'story');
   }
 
-  function handleFile(input) {
-    const file = input.files[0];
+  function handleFileSelect() {
+    const file = document.getElementById('fileInput').files[0];
     if(file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        base64Image = e.target.result.split(',')[1];
-        const img = document.getElementById('imagePreview');
-        img.src = e.target.result;
-        img.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
+      document.getElementById('uploadText').innerText = "Görsel Seçildi: " + file.name;
     }
+  }
+
+  function compressImage(file, maxWidth = 1080, quality = 0.8) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width, height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality).split(',')[1]);
+        };
+      };
+    });
   }
 
   async function analyzeImage() {
-    if(!base64Image) return alert('Lütfen bir ekran görüntüsü yükleyin.');
-    const resultsDiv = document.getElementById('resultArea');
-    resultsDiv.style.display = 'block';
-    resultsDiv.innerHTML = '✨ YAZIYOR AI Analiz Ediyor...';
+    const fileInput = document.getElementById('fileInput');
+    const resultsDiv = document.getElementById('results');
 
-    const apiKey = localStorage.getItem('yaziyor_api_key');
-    const name = localStorage.getItem('yaziyor_name') || 'Kullanıcı';
-    const savedData = JSON.parse(localStorage.getItem('yaziyor_userdata') || '{}');
+    if (!fileInput.files[0]) {
+      alert("Lütfen bir ekran görüntüsü yükleyin!");
+      return;
+    }
 
-    const promptText = `Sen YAZIYOR AI adında profesyonel bir flört koçusun. 
-    Kullanıcı Bilgileri: Adı: ${name}, Cinsiyet: ${savedData.gender}, Yaş: ${savedData.age}, Hedef: ${savedData.goal}, Tarz: ${savedData.style}.
-    ${activeTab === 'chat' 
-      ? 'Ekran görüntüsündeki sohbeti analiz et. Karşı tarafın ilgi seviyesini (%0-100) belirt ve kullanıcının seçtiği profile tam uygun 3 farklı etkileyici yanıt seçeneği üret.' 
-      : 'Verilen Instagram hikayesini incele. Hikayedeki detaya odaklanarak sohbet başlatacak 3 harika DM mesajı üret.'} 
-    Doğal Türkçe sosyal medya jargonuna uygun olsun. Markdown olarak sun.`;
+    resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ YAZIYOR analiz ediyor...</p>";
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      const base64Data = await compressImage(fileInput.files[0]);
+
+      // YAPAY ZEKAYA GİDEN ÖZEL TALİMAT
+      const promptText = `Kullanıcı Bilgileri:
+      - İsmi: ${userData.name}
+      - Yaş Grubu: ${userData.age}
+      - İstenen Mesaj UZUNLUĞU: ${userData.length} (Kısa ve Öz ise maksimum 1 cümle/birkaç kelime, Dengeli ise 1-2 cümle, Uzun ve Detaylı ise açıklayıcı olsun)
+      - İstenen Mesaj TONU: ${userData.tone}
+
+      GÖREV:
+      ${currentMode === 'chat' 
+        ? "Görseldeki sohbeti incele. Karşı tarafın ilgi seviyesini % olarak belirt. Ardından kullanıcının yukarıdaki UZUNLUK ve TON tercihlerine BİREBİR uyan 3 alternatif cevap önerisi yaz." 
+        : "Görseldeki Instagram hikayesini incele. Hikayedeki ortama/detaya odaklanarak kullanıcının UZUNLUK ve TON tercihlerine uygun 3 DM açılış mesajı yaz."}
+      
+      Doğal Türkçe sosyal medya jargonunda yanıt ver. Markdown formatında sun.`;
+
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${API_KEY}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: promptText }, { inline_data: { mime_type: "image/jpeg", data: base64Image } }] }]
+          contents: [{
+            parts: [
+              { text: promptText },
+              { inline_data: { mime_type: "image/jpeg", data: base64Data } }
+            ]
+          }]
         })
       });
 
@@ -256,17 +393,11 @@
       if(data.error) throw new Error(data.error.message);
 
       const htmlContent = marked.parse(data.candidates[0].content.parts[0].text);
-      resultsDiv.innerHTML = htmlContent;
+      resultsDiv.innerHTML = `<div class="result-area">${htmlContent}</div>`;
     } catch (err) {
-      resultsDiv.innerHTML = `<p style="color:red;">Hata: ${err.message}</p>`;
+      resultsDiv.innerHTML = `<p style='color:red;'>Hata: ${err.message}</p>`;
     }
   }
-
-  function resetSettings() {
-    localStorage.clear();
-    location.reload();
-  }
 </script>
-
 </body>
 </html>
