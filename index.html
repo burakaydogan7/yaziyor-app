@@ -459,6 +459,13 @@
     currentMode = mode;
     document.getElementById('chatTab').classList.toggle('active', mode === 'chat');
     document.getElementById('storyTab').classList.toggle('active', mode === 'story');
+    
+    const uploadText = document.getElementById('uploadText');
+    if(mode === 'chat') {
+      uploadText.innerText = "Sohbet Ekran Görüntüsü Yükle";
+    } else {
+      uploadText.innerText = "Story Ekran Görüntüsü Yükle";
+    }
   }
 
   function handleFileSelect() {
@@ -564,8 +571,8 @@
         }]
       });
 
-      // Güncellenmiş Sürüm İsimleri (gemini-2.5-flash-latest ve gemini-1.5-flash-latest)
-      let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-latest:generateContent?key=${apiKey}`, {
+      // BİRİNCİL MODEL: gemini-2.5-flash (Resmi aktif Vision modeli)
+      let response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: requestBody
@@ -573,8 +580,10 @@
 
       let data = await response.json();
 
+      // İKİNCİL YEDEK MODEL: gemini-2.5-pro
       if (data.error) {
-        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+        console.warn("Flash model hatası, Pro deneniyor:", data.error.message);
+        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: requestBody
