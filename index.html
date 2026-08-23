@@ -246,7 +246,7 @@
   <div id="step0" class="step-screen active">
     <div class="progress-bar"><div class="progress-fill" style="width: 15%"></div></div>
     <h1>Yapay Zeka <span>Anahtarları</span></h1>
-    <p class="sub-title">En azından Gemini API Key girmen yeterlidir. İsteğe bağlı olarak diğerlerini de yedek olarak ekleyebilirsin.</p>
+    <p class="sub-title">Gemini API Key girmen yeterlidir.</p>
     
     <label style="font-size:11px; color:var(--primary); display:block; margin-bottom:4px;">Google Gemini API Key (Zorunlu)</label>
     <input type="password" id="geminiKeyInput" class="input-box" placeholder="AIzaSy...">
@@ -426,8 +426,8 @@
   let selectedImageUrl = null;
 
   window.onload = function() {
-    const geminiKey = localStorage.getItem('yaziyor_gemini_key_v8');
-    const savedUser = localStorage.getItem('yaziyor_user_v8');
+    const geminiKey = localStorage.getItem('yaziyor_gemini_key_v9');
+    const savedUser = localStorage.getItem('yaziyor_user_v9');
 
     if (geminiKey && savedUser) {
       userData = JSON.parse(savedUser);
@@ -441,10 +441,10 @@
     const gKey = document.getElementById('geminiKeyInput').value.trim();
     if (!gKey) { alert("En azından Gemini API Key girmelisin!"); return; }
     
-    localStorage.setItem('yaziyor_gemini_key_v8', gKey);
-    localStorage.setItem('yaziyor_openai_key_v8', document.getElementById('openaiKeyInput').value.trim());
-    localStorage.setItem('yaziyor_anthropic_key_v8', document.getElementById('anthropicKeyInput').value.trim());
-    localStorage.setItem('yaziyor_grok_key_v8', document.getElementById('grokKeyInput').value.trim());
+    localStorage.setItem('yaziyor_gemini_key_v9', gKey);
+    localStorage.setItem('yaziyor_openai_key_v9', document.getElementById('openaiKeyInput').value.trim());
+    localStorage.setItem('yaziyor_anthropic_key_v9', document.getElementById('anthropicKeyInput').value.trim());
+    localStorage.setItem('yaziyor_grok_key_v9', document.getElementById('grokKeyInput').value.trim());
     
     nextStep(1);
   }
@@ -466,7 +466,7 @@
   }
 
   function finishOnboarding() {
-    localStorage.setItem('yaziyor_user_v8', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v9', JSON.stringify(userData));
     showDashboard();
   }
 
@@ -502,10 +502,10 @@
     document.getElementById('editAge').value = userData.age;
     document.getElementById('editLength').value = userData.length;
     document.getElementById('editTone').value = userData.tone;
-    document.getElementById('editGeminiKey').value = localStorage.getItem('yaziyor_gemini_key_v8') || '';
-    document.getElementById('editOpenaiKey').value = localStorage.getItem('yaziyor_openai_key_v8') || '';
-    document.getElementById('editAnthropicKey').value = localStorage.getItem('yaziyor_anthropic_key_v8') || '';
-    document.getElementById('editGrokKey').value = localStorage.getItem('yaziyor_grok_key_v8') || '';
+    document.getElementById('editGeminiKey').value = localStorage.getItem('yaziyor_gemini_key_v9') || '';
+    document.getElementById('editOpenaiKey').value = localStorage.getItem('yaziyor_openai_key_v9') || '';
+    document.getElementById('editAnthropicKey').value = localStorage.getItem('yaziyor_anthropic_key_v9') || '';
+    document.getElementById('editGrokKey').value = localStorage.getItem('yaziyor_grok_key_v9') || '';
     document.getElementById('profileModal').classList.add('active');
   }
 
@@ -516,12 +516,12 @@
     userData.age = document.getElementById('editAge').value;
     userData.length = document.getElementById('editLength').value;
     userData.tone = document.getElementById('editTone').value;
-    localStorage.setItem('yaziyor_user_v8', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v9', JSON.stringify(userData));
 
-    localStorage.setItem('yaziyor_gemini_key_v8', document.getElementById('editGeminiKey').value.trim());
-    localStorage.setItem('yaziyor_openai_key_v8', document.getElementById('editOpenaiKey').value.trim());
-    localStorage.setItem('yaziyor_anthropic_key_v8', document.getElementById('editAnthropicKey').value.trim());
-    localStorage.setItem('yaziyor_grok_key_v8', document.getElementById('editGrokKey').value.trim());
+    localStorage.setItem('yaziyor_gemini_key_v9', document.getElementById('editGeminiKey').value.trim());
+    localStorage.setItem('yaziyor_openai_key_v9', document.getElementById('editOpenaiKey').value.trim());
+    localStorage.setItem('yaziyor_anthropic_key_v9', document.getElementById('editAnthropicKey').value.trim());
+    localStorage.setItem('yaziyor_grok_key_v9', document.getElementById('editGrokKey').value.trim());
 
     document.getElementById('profileBtnName').innerText = userData.name;
     closeProfileModal();
@@ -530,12 +530,12 @@
 
   function resetAll() { localStorage.clear(); location.reload(); }
 
-  // ÇOKLU YAPAY ZEKA SAĞLAYICISI FALLBACK MEKANİZMASI
+  // TEK VE KARARLI MODEL ÜZERİNDEN ÇALIŞAN SİSTEM
   async function analyzeScreenshot() {
-    const gKey = localStorage.getItem('yaziyor_gemini_key_v8');
-    const oKey = localStorage.getItem('yaziyor_openai_key_v8');
-    const aKey = localStorage.getItem('yaziyor_anthropic_key_v8');
-    const xKey = localStorage.getItem('yaziyor_grok_key_v8');
+    const gKey = localStorage.getItem('yaziyor_gemini_key_v9');
+    const oKey = localStorage.getItem('yaziyor_openai_key_v9');
+    const aKey = localStorage.getItem('yaziyor_anthropic_key_v9');
+    const xKey = localStorage.getItem('yaziyor_grok_key_v9');
 
     if (!gKey && !oKey && !aKey && !xKey) {
       alert("Hiçbir API Key bulunamadı!");
@@ -558,7 +558,7 @@
         throw new Error("Görselde yeterli yazı okunamadı. Lütfen daha net bir ekran görüntüsü yükle.");
       }
 
-      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ Doğal sokak diliyle üretiliyor (Yapay zekalar taranıyor)...</p>";
+      resultsDiv.innerHTML = "<p style='color:var(--primary); text-align:center; margin-top:20px;'>⚡ Doğal sokak diliyle hazırlanıyor...</p>";
 
       const systemContext = `Sen Tinder, Badoo, Happn ve Instagram gibi platformlarda flört eden, 20'li yaşlarında çok popüler, dili son derece doğal, sokak ve sosyal medya ağzıyla konuşan bir diyalog koçusun. Asla robotik, resmi veya yapay zeka gibi uzun cümleler kurma. Tamamen gerçek bir insan gibi konuş. 
 Kullanıcının Uzunluk Tercihi: "${userData.length}" -> Eğer 'Kısa ve Öz' seçildiyse mutlaka tek cümlelik, net, vurucu ve karşı tarafa pas atan kısa cevaplar ver. Uzatmak yasak.
@@ -581,29 +581,32 @@ Kurallar: Kesinlikle robotik olmasın, gerçek sosyal medya yazışma dilinde 3 
 
       let aiResponseText = null;
 
-      // 1. ADIM: GEMINI MODELLERİNİ DENE
+      // 1. ADIM: GEMİNİ (Tek ve en kararlı model: gemini-1.5-flash)
       if (gKey && !aiResponseText) {
-        const geminiModels = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-3.5-flash"];
-        for (let model of geminiModels) {
-          try {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${gKey}`;
-            const res = await fetch(endpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
-            });
-            if (res.ok) {
-              const data = await res.json();
-              if (data.candidates && data.candidates[0]?.content) {
-                aiResponseText = data.candidates[0].content.parts[0].text;
-                break;
-              }
+        try {
+          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${gKey}`;
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.candidates && data.candidates[0]?.content) {
+              aiResponseText = data.candidates[0].content.parts[0].text;
+            } else if (data.error) {
+              throw new Error(data.error.message);
             }
-          } catch(e) {}
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error?.message || `Gemini Kotası veya Bağlantı Hatası (HTTP ${res.status})`);
+          }
+        } catch(e) {
+          throw new Error("Gemini Hatası: " + e.message);
         }
       }
 
-      // 2. ADIM: OPENAI (CHATGPT) DENE
+      // 2. ADIM: OPENAI (CHATGPT)
       if (oKey && !aiResponseText) {
         try {
           const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -621,7 +624,7 @@ Kurallar: Kesinlikle robotik olmasın, gerçek sosyal medya yazışma dilinde 3 
         } catch(e) {}
       }
 
-      // 3. ADIM: ANTHROPIC (CLAUDE) DENE
+      // 3. ADIM: ANTHROPIC (CLAUDE)
       if (aKey && !aiResponseText) {
         try {
           const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -646,7 +649,7 @@ Kurallar: Kesinlikle robotik olmasın, gerçek sosyal medya yazışma dilinde 3 
         } catch(e) {}
       }
 
-      // 4. ADIM: GROK (XAI) DENE
+      // 4. ADIM: GROK (XAI)
       if (xKey && !aiResponseText) {
         try {
           const res = await fetch("https://api.x.ai/v1/chat/completions", {
@@ -665,7 +668,7 @@ Kurallar: Kesinlikle robotik olmasın, gerçek sosyal medya yazışma dilinde 3 
       }
 
       if (!aiResponseText) {
-        throw new Error("Tüm ekli yapay zeka sağlayıcıları kotaya takıldı veya anahtarlar geçersiz. Lütfen birkaç saniye bekleyip tekrar deneyin.");
+        throw new Error("Yapay zeka yanıt üretemedi.");
       }
 
       const htmlContent = marked.parse(aiResponseText);
