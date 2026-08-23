@@ -471,9 +471,9 @@
   let selectedImageUrl = null;
 
   window.onload = function() {
-    const savedKey = localStorage.getItem('yaziyor_gemini_key_v6');
-    const savedUser = localStorage.getItem('yaziyor_user_v6');
-    const savedStats = localStorage.getItem('yaziyor_stats_v6');
+    const savedKey = localStorage.getItem('yaziyor_gemini_key_v7');
+    const savedUser = localStorage.getItem('yaziyor_user_v7');
+    const savedStats = localStorage.getItem('yaziyor_stats_v7');
 
     if (savedStats) appStats = JSON.parse(savedStats);
     if (savedKey && savedUser) {
@@ -500,7 +500,7 @@
   function saveApiKey() {
     const key = document.getElementById('apiKeyInput').value.trim();
     if (!key) { alert("Lütfen geçerli bir API Key gir!"); return; }
-    localStorage.setItem('yaziyor_gemini_key_v6', key);
+    localStorage.setItem('yaziyor_gemini_key_v7', key);
     nextStep(1);
   }
 
@@ -521,7 +521,7 @@
   }
 
   function finishOnboarding() {
-    localStorage.setItem('yaziyor_user_v6', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v7', JSON.stringify(userData));
     showDashboard();
   }
 
@@ -575,7 +575,7 @@
   function closeAdminModal() { document.getElementById('adminModal').classList.remove('active'); }
   function clearStats() {
     appStats.totalAnalyses = 0;
-    localStorage.removeItem('yaziyor_stats_v6');
+    localStorage.removeItem('yaziyor_stats_v7');
     document.getElementById('statTotalCount').innerText = 0;
     alert("İstatistikler sıfırlandı!");
   }
@@ -585,7 +585,7 @@
     userData.age = document.getElementById('editAge').value;
     userData.length = document.getElementById('editLength').value;
     userData.tone = document.getElementById('editTone').value;
-    localStorage.setItem('yaziyor_user_v6', JSON.stringify(userData));
+    localStorage.setItem('yaziyor_user_v7', JSON.stringify(userData));
     document.getElementById('profileBtnName').innerText = userData.name;
     closeProfileModal();
     alert("Profil bilgilerin başarıyla güncellendi!");
@@ -594,7 +594,7 @@
   function resetApiKey() { localStorage.clear(); location.reload(); }
 
   async function analyzeScreenshot() {
-    const apiKey = localStorage.getItem('yaziyor_gemini_key_v6');
+    const apiKey = localStorage.getItem('yaziyor_gemini_key_v7');
     if (!apiKey) {
       alert("API Key bulunamadı.");
       resetApiKey();
@@ -650,11 +650,11 @@
         }]
       });
 
-      // 2. AŞAMA: Kararlı ve Çalışan Fallback Modelleri Havuzu
+      // 2. AŞAMA: Güncel ve Kararlı Model Havuzu (Fallback Mekanizması)
       const modelsToTry = [
-        "gemini-1.5-flash", 
-        "gemini-1.5-pro", 
-        "gemini-2.5-flash"
+        "gemini-1.5-flash",
+        "gemini-1.5-pro",
+        "gemini-3.5-flash"
       ];
 
       let response = null;
@@ -678,7 +678,8 @@
               lastError = data.error.message;
             }
           } else {
-            lastError = `HTTP ${res.status} - Model (${modelName}) geçersiz veya kota aşımı.`;
+            const errData = await res.json().catch(() => ({}));
+            lastError = errData.error?.message || `HTTP ${res.status} - Model (${modelName}) erişilemedi.`;
           }
         } catch (e) {
           lastError = e.message;
@@ -686,11 +687,11 @@
       }
 
       if (!response) {
-        throw new Error(lastError || "Tüm yapay zeka modelleri yoğun. Lütfen birkaç saniye sonra tekrar dene.");
+        throw new Error(lastError || "Tüm yapay zeka modelleri yoğun veya anahtarınız bu modellere kısıtlı.");
       }
 
       appStats.totalAnalyses++;
-      localStorage.setItem('yaziyor_stats_v6', JSON.stringify(appStats));
+      localStorage.setItem('yaziyor_stats_v7', JSON.stringify(appStats));
 
       const htmlContent = marked.parse(response.candidates[0].content.parts[0].text);
       resultsDiv.innerHTML = `<div class="result-area">${htmlContent}</div>`;
